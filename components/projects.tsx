@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 
 const projectUrls = [
+  'https://devtracker-rose.vercel.app/',
   'https://student-therapy-chatbot-fe.vercel.app/',
   'https://improved-currency-converter-kpb8.vercel.app/',
   'https://improved-currency-converter.vercel.app/'
