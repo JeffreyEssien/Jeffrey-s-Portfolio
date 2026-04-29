@@ -1,121 +1,96 @@
 'use client'
 
-import { motion, useScroll, useTransform } from 'framer-motion'
-import { useRef } from 'react'
-
-const skills = [
-  { name: 'JavaScript', level: 95 },
-  { name: 'TypeScript', level: 92 },
-  { name: 'React & Next.js', level: 94 },
-  { name: 'React Native', level: 88 },
-  { name: 'Tailwind & ShadCN/UI', level: 90 }
-]
-
-const technologies = [
-  'Firebase', 'AI API Integration', 'JWT Auth', 'Serverless APIs',
-  'Postman', 'CI/CD', 'Figma', 'Vercel', 'Netlify'
-]
-
-const certifications = [
-  'Google Machine Learning Crash Course – Google',
-  'React Native for Beginners – CodeWithMosh',
-  'Learn Next.js – Codecademy',
-  'Microsoft Certified: Power BI Data Analyst Associate',
-  'Database Administration Fundamentals – New Horizons'
-]
+import { motion } from 'framer-motion'
+import useSWR from 'swr'
+import { DEFAULT_ABOUT, getAbout } from '../src/lib/content'
 
 export default function About() {
-  const ref = useRef(null)
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['0 1', '1.2 1'] })
-
-  const translateLeft = useTransform(scrollYProgress, [0, 1], ['-60px', '0px'])
-  const translateRight = useTransform(scrollYProgress, [0, 1], ['60px', '0px'])
-  const opacity = useTransform(scrollYProgress, [0, 0.3, 1], [0, 0.6, 1])
+  const { data } = useSWR('about', getAbout, { fallbackData: DEFAULT_ABOUT })
+  const a = data ?? DEFAULT_ABOUT
 
   return (
-    <section
-      ref={ref}
-      id="about"
-      className="relative min-h-screen py-32 px-6 md:px-20 bg-[#f9fafb] text-gray-800 overflow-hidden"
-    >
-      {/* Decorative blob */}
-      <motion.div
-        className="absolute top-[-10%] left-[-10%] w-[400px] h-[400px] bg-gradient-to-br from-indigo-300 to-purple-300 opacity-30 blur-[100px] rounded-full"
-        animate={{ scale: [1, 1.2, 1], borderRadius: ['50%', '40%', '50%'] }}
-        transition={{ repeat: Infinity, duration: 10 }}
-      />
-
-      <motion.h2
-        className="text-5xl font-bold text-center mb-20"
-        initial={{ opacity: 0, y: -40 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1 }}
-      >
-        👨‍💻 About Me
-      </motion.h2>
-
-      <div className="grid md:grid-cols-2 gap-20 max-w-7xl mx-auto items-start">
-        {/* Education & Certifications */}
-        <motion.div style={{ translateX: translateLeft, opacity }}>
-          <h3 className="text-2xl font-semibold mb-4 text-indigo-700">🎓 Education</h3>
-          <div className="bg-white/60 backdrop-blur shadow-xl rounded-xl p-6 mb-10">
-            <p>
-              <strong>B.Sc. in Software Engineering</strong><br />
-              Babcock University, Nigeria <br />
-              <span className="text-sm text-gray-500">CGPA: 4.10 / 5.00 (2022 – 2025)</span>
-            </p>
+    <section id="about" className="py-32 px-6 md:px-8">
+      <div className="max-w-6xl mx-auto">
+        <div className="grid md:grid-cols-12 gap-8 mb-20">
+          <div className="md:col-span-3">
+            <p className="text-xs uppercase tracking-[0.15em] text-neutral-500">{a.eyebrow}</p>
           </div>
+          <div className="md:col-span-9">
+            <h2 className="text-3xl md:text-5xl font-medium tracking-tight leading-tight text-neutral-900 max-w-3xl">
+              {a.headlinePrefix}
+              <span className="font-serif italic font-normal">{a.headlineAccent}</span>
+              {a.headlineSuffix}
+            </h2>
+          </div>
+        </div>
 
-          <h3 className="text-2xl font-semibold mb-4 text-indigo-700">📜 Certifications</h3>
-          <ul className="space-y-4">
-            {certifications.map((cert, i) => (
-              <motion.li
-                key={i}
-                className="bg-white shadow px-4 py-3 rounded-lg border-l-4 border-indigo-500"
-                whileHover={{ scale: 1.05 }}
-              >
-                {cert}
-              </motion.li>
-            ))}
-          </ul>
-        </motion.div>
+        <div className="grid md:grid-cols-12 gap-8 md:gap-16">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="md:col-span-6 space-y-12"
+          >
+            <div>
+              <p className="text-xs uppercase tracking-[0.15em] text-neutral-500 mb-4">{a.educationLabel}</p>
+              <p className="font-medium text-neutral-900">{a.educationDegree}</p>
+              <p className="text-neutral-600 mt-1">{a.educationSchool}</p>
+              <p className="text-sm text-neutral-500 mt-1">{a.educationPeriod}</p>
+            </div>
 
-        {/* Skills & Technologies */}
-        <motion.div style={{ translateX: translateRight, opacity }}>
-          <h3 className="text-2xl font-semibold mb-4 text-indigo-700">🧠 Skill Proficiency</h3>
-          <div className="space-y-6 mb-10">
-            {skills.map((skill, i) => (
-              <div key={i}>
-                <div className="flex justify-between mb-1 text-sm font-medium">
-                  <span>{skill.name}</span>
-                  <span>{skill.level}%</span>
-                </div>
-                <div className="w-full bg-gray-200 h-3 rounded-full overflow-hidden">
-                  <motion.div
-                    className="bg-indigo-600 h-3"
-                    initial={{ width: 0 }}
-                    whileInView={{ width: `${skill.level}%` }}
-                    transition={{ duration: 0.8, delay: i * 0.1 }}
-                  />
-                </div>
+            <div>
+              <p className="text-xs uppercase tracking-[0.15em] text-neutral-500 mb-4">{a.certificationsLabel}</p>
+              <ul className="space-y-3">
+                {a.certifications.map((cert, i) => (
+                  <li key={i} className="text-neutral-700 leading-relaxed">{cert}</li>
+                ))}
+              </ul>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="md:col-span-6 space-y-12"
+          >
+            <div>
+              <p className="text-xs uppercase tracking-[0.15em] text-neutral-500 mb-6">{a.skillsLabel}</p>
+              <div className="space-y-5">
+                {a.skills.map((skill, i) => (
+                  <div key={i}>
+                    <div className="flex justify-between mb-2 text-sm">
+                      <span className="text-neutral-900">{skill.name}</span>
+                      <span className="text-neutral-400 font-serif italic">{skill.level}</span>
+                    </div>
+                    <div className="w-full h-px bg-neutral-200 relative overflow-hidden">
+                      <motion.div
+                        className="absolute left-0 top-0 h-px bg-neutral-900"
+                        initial={{ width: 0 }}
+                        whileInView={{ width: `${skill.level}%` }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 1, delay: i * 0.08, ease: [0.4, 0, 0.2, 1] }}
+                      />
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            </div>
 
-          <h3 className="text-2xl font-semibold mb-4 text-indigo-700">🧰 Technologies</h3>
-          <div className="flex flex-wrap gap-3">
-            {technologies.map((tech, i) => (
-              <motion.span
-                key={i}
-                className="px-4 py-2 text-sm bg-indigo-100 text-indigo-700 rounded-full font-medium shadow hover:shadow-lg cursor-pointer"
-                whileHover={{ scale: 1.15, rotate: [0, 2, -2, 0] }}
-                transition={{ type: 'spring', stiffness: 200, damping: 10 }}
-              >
-                {tech}
-              </motion.span>
-            ))}
-          </div>
-        </motion.div>
+            <div>
+              <p className="text-xs uppercase tracking-[0.15em] text-neutral-500 mb-4">{a.stackLabel}</p>
+              <div className="flex flex-wrap gap-2">
+                {a.technologies.map((tech, i) => (
+                  <span key={i} className="px-3 py-1.5 text-sm border border-neutral-200 rounded-full text-neutral-700 hover:border-neutral-900 hover:text-neutral-900 transition-colors duration-200">
+                    {tech}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        </div>
       </div>
     </section>
   )

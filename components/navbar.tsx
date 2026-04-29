@@ -1,46 +1,58 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-
-const sections = ['hero', 'about', 'projects', 'contact']
+import useSWR from 'swr'
+import { DEFAULT_SITE, getSite } from '../src/lib/content'
 
 const Navbar = () => {
-  const [active, setActive] = useState<string>('hero')
+  const { data } = useSWR('site', getSite, { fallbackData: DEFAULT_SITE })
+  const site = data ?? DEFAULT_SITE
+  const sections = [
+    { id: 'hero', label: site.navHome },
+    { id: 'about', label: site.navAbout },
+    { id: 'projects', label: site.navProjects },
+    { id: 'contact', label: site.navContact },
+  ]
+  const [active, setActive] = useState('hero')
+  const [scrolled, setScrolled] = useState(false)
 
   useEffect(() => {
     const handleScroll = () => {
-      const scrollY = window.scrollY
-      for (let id of sections) {
-        const el = document.getElementById(id)
-        if (el && scrollY >= el.offsetTop - 100) {
-          setActive(id)
-        }
+      const y = window.scrollY
+      setScrolled(y > 16)
+      for (const s of sections) {
+        const el = document.getElementById(s.id)
+        if (el && y >= el.offsetTop - 120) setActive(s.id)
       }
     }
-
-    window.addEventListener('scroll', handleScroll)
+    handleScroll()
+    window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
+  }, [sections])
 
   return (
-    <nav className="fixed top-0 left-0 w-full bg-black/50 backdrop-blur z-50 px-6 py-4 shadow-lg">
-      <ul className="flex justify-center gap-8 text-sm md:text-base text-white font-semibold">
-        {sections.map((section) => (
-          <li key={section}>
-            <a
-              href={`#${section}`}
-              className={`relative px-2 py-1 transition-all duration-300 ${
-                active === section ? 'text-indigo-400' : 'text-white hover:text-indigo-300'
-              }`}
-            >
-              <span className="capitalize">{section}</span>
-              {active === section && (
-                <span className="absolute left-0 bottom-0 w-full h-0.5 bg-indigo-400 animate-pulse" />
-              )}
-            </a>
-          </li>
-        ))}
-      </ul>
+    <nav
+      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
+        scrolled ? 'bg-[#fafaf9]/80 backdrop-blur-md border-b border-neutral-200/60' : 'bg-transparent'
+      }`}
+    >
+      <div className="max-w-6xl mx-auto px-6 md:px-8 py-5 flex justify-between items-center">
+        <a href="#hero" className="text-sm font-semibold tracking-tight">{site.brand}</a>
+        <ul className="flex items-center gap-8 text-sm">
+          {sections.map((s) => (
+            <li key={s.id}>
+              <a
+                href={`#${s.id}`}
+                className={`transition-colors duration-200 ${
+                  active === s.id ? 'text-neutral-900' : 'text-neutral-500 hover:text-neutral-900'
+                }`}
+              >
+                {s.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
     </nav>
   )
 }

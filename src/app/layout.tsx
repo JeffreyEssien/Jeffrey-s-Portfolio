@@ -1,21 +1,24 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, Fraunces } from "next/font/google";
 import "./globals.css";
+import { getSite } from "../lib/content";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
+  variable: "--font-sans",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const fraunces = Fraunces({
+  variable: "--font-serif",
   subsets: ["latin"],
+  style: ["italic", "normal"],
+  weight: ["400", "500"],
 });
 
-export const metadata: Metadata = {
-  title: "Jeffrey's portfolio",
-  description: "Built by Jeff",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const site = await getSite();
+  return { title: site.metaTitle, description: site.metaDescription };
+}
 
 export default function RootLayout({
   children,
@@ -24,9 +27,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={`${inter.variable} ${fraunces.variable} antialiased bg-[#fafaf9] text-neutral-900 selection:bg-neutral-900 selection:text-white`}>
         {children}
       </body>
     </html>
