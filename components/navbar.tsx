@@ -1,18 +1,18 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import useSWR from 'swr'
 import { DEFAULT_SITE, getSite } from '../src/lib/content'
 
 const Navbar = () => {
   const { data } = useSWR('site', getSite, { fallbackData: DEFAULT_SITE })
   const site = data ?? DEFAULT_SITE
-  const sections = [
+  const sections = useMemo(() => [
     { id: 'hero', label: site.navHome },
     { id: 'about', label: site.navAbout },
     { id: 'projects', label: site.navProjects },
     { id: 'contact', label: site.navContact },
-  ]
+  ], [site.navHome, site.navAbout, site.navProjects, site.navContact])
   const [active, setActive] = useState('hero')
   const [scrolled, setScrolled] = useState(false)
 
