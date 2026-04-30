@@ -194,6 +194,7 @@ function ProjectRow({ project, onChanged }: { project: Project; onChanged: () =>
   const [p, setP] = useState<Project>(project)
   const [state, save] = useSaveState()
   const [uploading, setUploading] = useState(false)
+  const [fetching, setFetching] = useState(false)
 
   const persist = async (next: Project) => {
     if (!next.$id) return
@@ -211,6 +212,26 @@ function ProjectRow({ project, onChanged }: { project: Project; onChanged: () =>
       await persist(next)
       if (oldId) await deleteFile(oldId)
     } finally { setUploading(false) }
+  }
+
+  const fetchFromLink = async () => {
+    if (!p.link || !p.$id) return
+    setFetching(true)
+    try {
+      const res = await fetch(`/api/og-preview?url=${encodeURIComponent(p.link)}`)
+      if (!res.ok) throw new Error(`Preview fetch failed (${res.status})`)
+      const blob = await res.blob()
+      const ext = (blob.type.split('/')[1] || 'jpg').split(';')[0]
+      const file = new File([blob], `preview.${ext}`, { type: blob.type || 'image/jpeg' })
+      const oldId = p.imageFileId
+      const newId = await uploadFile(file)
+      const next = { ...p, imageFileId: newId }
+      setP(next)
+      await persist(next)
+      if (oldId) await deleteFile(oldId)
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Could not fetch preview')
+    } finally { setFetching(false) }
   }
 
   const remove = async () => {
@@ -234,6 +255,14 @@ function ProjectRow({ project, onChanged }: { project: Project; onChanged: () =>
             )}
           </div>
           <input type="file" accept="image/*" onChange={(e) => onFile(e.target.files?.[0] ?? null)} className="text-xs w-full" />
+          <button
+            type="button"
+            onClick={fetchFromLink}
+            disabled={!p.link || fetching || uploading}
+            className="mt-2 w-full px-3 py-1.5 rounded-md text-xs font-medium border border-neutral-300 text-neutral-700 hover:bg-neutral-50 disabled:opacity-50 transition-colors duration-200"
+          >
+            {fetching ? 'Fetching…' : 'Fetch from link'}
+          </button>
           {uploading && <p className="text-xs text-neutral-500 mt-1">Uploading…</p>}
         </div>
         <div className="space-y-4">

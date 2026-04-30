@@ -18,6 +18,7 @@ For **each** collection below, use the exact ID and add a single attribute:
 
 | Collection ID | Attribute | Type | Size | Required |
 |---------------|-----------|------|------|----------|
+| `site`        | `data`    | String | 100000 | yes |
 | `hero`        | `data`    | String | 100000 | yes |
 | `about`       | `data`    | String | 100000 | yes |
 | `projects`    | `data`    | String | 100000 | yes |
@@ -28,7 +29,7 @@ For each collection, set **Permissions**:
 - Role `Users` → **Create, Update, Delete**
 
 ## 5. Seed singleton documents
-For `hero`, `about`, `contact` — create one document with **Document ID = `main`** and `data = {}`. (You can edit them through `/admin` after.)
+For `site`, `hero`, `about`, `contact` — create one document with **Document ID = `main`** and `data = {}`. (You can edit them through `/admin` after.)
 
 `projects` is a multi-doc collection — leave empty.
 
