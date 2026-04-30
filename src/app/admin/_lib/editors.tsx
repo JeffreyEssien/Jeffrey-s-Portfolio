@@ -196,9 +196,20 @@ function ProjectRow({ project, onChanged }: { project: Project; onChanged: () =>
   const [uploading, setUploading] = useState(false)
   const [fetching, setFetching] = useState(false)
 
+  const normalizeLink = (u: string) => {
+    const v = (u || '').trim()
+    if (!v) return ''
+    if (/^https?:\/\//i.test(v)) return v
+    if (v.startsWith('//')) return 'https:' + v
+    return 'https://' + v
+  }
+
   const persist = async (next: Project) => {
-    if (!next.$id) return
-    await updateProject(next.$id, { title: next.title, description: next.description, link: next.link, imageFileId: next.imageFileId, order: next.order })
+    const id = next.$id
+    if (!id) return
+    const link = normalizeLink(next.link)
+    if (link !== next.link) { next = { ...next, link }; setP(next) }
+    await updateProject(id, { title: next.title, description: next.description, link, imageFileId: next.imageFileId, order: next.order })
   }
 
   const onFile = async (f: File | null) => {
@@ -218,7 +229,7 @@ function ProjectRow({ project, onChanged }: { project: Project; onChanged: () =>
     if (!p.link || !p.$id) return
     setFetching(true)
     try {
-      const res = await fetch(`/api/og-preview?url=${encodeURIComponent(p.link)}`)
+      const res = await fetch(`/api/og-preview?url=${encodeURIComponent(normalizeLink(p.link))}`)
       if (!res.ok) throw new Error(`Preview fetch failed (${res.status})`)
       const blob = await res.blob()
       const ext = (blob.type.split('/')[1] || 'jpg').split(';')[0]

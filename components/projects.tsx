@@ -5,6 +5,14 @@ import useSWR from 'swr'
 import { fileUrl } from '../src/lib/appwrite'
 import { DEFAULT_SITE, getProjects, getSite } from '../src/lib/content'
 
+const normalizeUrl = (u: string) => {
+  const v = (u || '').trim()
+  if (!v) return '#'
+  if (/^https?:\/\//i.test(v)) return v
+  if (v.startsWith('//')) return 'https:' + v
+  return 'https://' + v
+}
+
 const Projects = () => {
   const { data: projects, isLoading } = useSWR('projects', getProjects, { fallbackData: [] })
   const { data: siteData } = useSWR('site', getSite, { fallbackData: DEFAULT_SITE })
@@ -38,7 +46,7 @@ const Projects = () => {
           {projects?.map((p, i) => (
             <motion.a
               key={p.$id ?? i}
-              href={p.link}
+              href={normalizeUrl(p.link)}
               target="_blank"
               rel="noopener noreferrer"
               initial={{ opacity: 0, y: 24 }}
