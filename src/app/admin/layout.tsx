@@ -14,6 +14,7 @@ const NAV = [
   { href: '/admin/work', label: 'Experience' },
   { href: '/admin/projects', label: 'Projects' },
   { href: '/admin/contact', label: 'Contact' },
+  { href: '/admin/cv', label: 'CV / Resume' },
 ]
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -84,7 +85,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
       </aside>
       <main className="flex-1 ml-64">
-        <div className="max-w-3xl mx-auto px-6 md:px-10 py-12 bg-white min-h-screen border-l border-neutral-200">{children}</div>
+        <div className={`${pathname === '/admin/cv' ? 'max-w-[1400px]' : 'max-w-3xl'} mx-auto px-6 md:px-10 py-12 bg-white min-h-screen border-l border-neutral-200`}>{children}</div>
       </main>
     </div>
   )

@@ -340,3 +340,123 @@ export async function deleteFile(fileId: string): Promise<void> {
     // ignore — file may already be gone
   }
 }
+
+export type CvLink = { id: string; label: string; url: string }
+export type CvBullet = { id: string; text: string }
+export type CvExperienceItem = { id: string; role: string; company: string; location: string; period: string; bullets: CvBullet[] }
+export type CvEducationItem = { id: string; degree: string; school: string; location: string; period: string; details: string }
+export type CvProjectItem = { id: string; title: string; description: string; link: string; bullets: CvBullet[] }
+export type CvSkillGroup = { id: string; label: string; items: string[] }
+export type CvSimpleItem = { id: string; text: string }
+
+export type CvSection =
+  | { id: string; type: 'summary'; visible: boolean; heading: string; body: string }
+  | { id: string; type: 'experience'; visible: boolean; heading: string; items: CvExperienceItem[] }
+  | { id: string; type: 'education'; visible: boolean; heading: string; items: CvEducationItem[] }
+  | { id: string; type: 'skills'; visible: boolean; heading: string; groups: CvSkillGroup[] }
+  | { id: string; type: 'projects'; visible: boolean; heading: string; items: CvProjectItem[] }
+  | { id: string; type: 'certifications'; visible: boolean; heading: string; items: CvSimpleItem[] }
+  | { id: string; type: 'custom'; visible: boolean; heading: string; items: CvSimpleItem[] }
+
+export type CvTemplate = 'ats-classic' | 'ats-modern' | 'ats-compact' | 'editorial' | 'creative'
+
+export type Cv = {
+  template: CvTemplate
+  fontFamily: 'Helvetica' | 'Times-Roman' | 'Courier'
+  fontSize: number
+  accentColor: string
+  margin: number
+  personal: {
+    fullName: string
+    headline: string
+    email: string
+    phone: string
+    location: string
+    website: string
+    links: CvLink[]
+  }
+  sections: CvSection[]
+}
+
+export const DEFAULT_CV: Cv = {
+  template: 'ats-classic',
+  fontFamily: 'Helvetica',
+  fontSize: 10.5,
+  accentColor: '#111111',
+  margin: 40,
+  personal: {
+    fullName: '',
+    headline: '',
+    email: '',
+    phone: '',
+    location: '',
+    website: '',
+    links: [],
+  },
+  sections: [],
+}
+
+const newId = () => Math.random().toString(36).slice(2, 10)
+
+export function seedCvFromSite(
+  hero: Hero,
+  about: About,
+  work: WorkEntry[],
+  projects: Project[],
+  contact: Contact,
+  existing?: Cv,
+): Cv {
+  const base = existing ?? DEFAULT_CV
+  const sections: CvSection[] = [
+    { id: newId(), type: 'summary', visible: true, heading: 'Summary',
+      body: [hero.subheadline, about.extraParagraph].filter(Boolean).join(' ') },
+    { id: newId(), type: 'experience', visible: true, heading: 'Experience',
+      items: work.map((w) => ({
+        id: newId(),
+        role: w.role,
+        company: w.company,
+        location: w.location,
+        period: w.period,
+        bullets: (w.description || '')
+          .split('\n').map((l) => l.trim()).filter(Boolean)
+          .map((text) => ({ id: newId(), text })),
+      })) },
+    { id: newId(), type: 'education', visible: true, heading: 'Education',
+      items: [{
+        id: newId(),
+        degree: about.educationDegree,
+        school: about.educationSchool,
+        location: '',
+        period: about.educationPeriod,
+        details: '',
+      }] },
+    { id: newId(), type: 'skills', visible: true, heading: 'Skills',
+      groups: [
+        { id: newId(), label: about.skillsLabel || 'Core', items: about.skills.map((s) => s.name) },
+        { id: newId(), label: about.stackLabel || 'Stack', items: about.technologies },
+      ].filter((g) => g.items.length) },
+    { id: newId(), type: 'projects', visible: true, heading: 'Projects',
+      items: projects.map((p) => ({
+        id: newId(),
+        title: p.title,
+        description: p.description,
+        link: p.link,
+        bullets: [],
+      })) },
+    { id: newId(), type: 'certifications', visible: true, heading: 'Certifications',
+      items: about.certifications.map((c) => ({ id: newId(), text: c })) },
+  ]
+  return {
+    ...base,
+    personal: {
+      ...base.personal,
+      fullName: base.personal.fullName || [hero.greeting, hero.name].filter(Boolean).join(' ').replace(/^Hello,?\s*I'?m\s*/i, '').trim() || hero.name,
+      headline: base.personal.headline || hero.taglines[0] || '',
+      email: base.personal.email || contact.email,
+    },
+    sections,
+  }
+}
+
+export const getCv = () => readSingleton(APPWRITE_CONFIG.collections.cv, DEFAULT_CV)
+export const setCv = (v: Cv) => writeSingleton(APPWRITE_CONFIG.collections.cv, v)
