@@ -7,6 +7,7 @@ const SECTIONS = [
   { href: '/admin/site', title: 'Site', desc: 'Brand name, navigation labels, page metadata, footer.' },
   { href: '/admin/hero', title: 'Hero', desc: 'Greeting, name, subheadline, taglines, call-to-action buttons.' },
   { href: '/admin/about', title: 'About', desc: 'Education, certifications, skills, stack — and section copy.' },
+  { href: '/admin/work', title: 'Experience', desc: 'Add, edit, reorder, and delete work history entries.' },
   { href: '/admin/projects', title: 'Projects', desc: 'Add, edit, reorder, and delete projects with images.' },
   { href: '/admin/contact', title: 'Contact', desc: 'Email, CV upload, contact section copy.' },
 ]

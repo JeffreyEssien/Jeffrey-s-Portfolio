@@ -10,6 +10,7 @@ export const APPWRITE_CONFIG = {
     about: process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_ABOUT || 'about',
     projects: process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_PROJECTS || 'projects',
     contact: process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_CONTACT || 'contact',
+    work: process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_WORK || 'work',
   },
 }
 

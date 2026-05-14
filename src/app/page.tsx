@@ -3,6 +3,7 @@
 import Navbar from '../../components/navbar'
 import Hero from '../../components/hero'
 import About from '../../components/about'
+import Work from '../../components/work'
 import Projects from '../../components/projects'
 import Contact from '../../components/contacts'
 
@@ -16,6 +17,9 @@ export default function Home() {
         </section>
         <section id="about">
           <About />
+        </section>
+        <section id="work">
+          <Work />
         </section>
         <section id="projects">
           <Projects />

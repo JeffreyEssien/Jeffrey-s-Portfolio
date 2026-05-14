@@ -5,12 +5,18 @@ export type Site = {
   brand: string
   navHome: string
   navAbout: string
+  navWork: string
   navProjects: string
   navContact: string
   metaTitle: string
   metaDescription: string
   footerCopyright: string
   footerTagline: string
+  workEyebrow: string
+  workHeadlinePrefix: string
+  workHeadlineAccent: string
+  workHeadlineSuffix: string
+  workEmpty: string
   projectsEyebrow: string
   projectsHeadlinePrefix: string
   projectsHeadlineAccent: string
@@ -47,6 +53,16 @@ export type About = {
   technologies: string[]
 }
 
+export type WorkEntry = {
+  $id?: string
+  role: string
+  company: string
+  period: string
+  location: string
+  description: string
+  order: number
+}
+
 export type Project = {
   $id?: string
   title: string
@@ -74,12 +90,18 @@ export const DEFAULT_SITE: Site = {
   brand: 'Jeffrey Essien',
   navHome: 'Home',
   navAbout: 'About',
+  navWork: 'Experience',
   navProjects: 'Work',
   navContact: 'Contact',
   metaTitle: 'Jeffrey Essien — Software Engineer',
   metaDescription: 'Front-end developer, mobile builder, UX-obsessed engineer.',
   footerCopyright: '© {year} Jeffrey Essien',
   footerTagline: 'Designed & built with care',
+  workEyebrow: 'Experience',
+  workHeadlinePrefix: "Places I've ",
+  workHeadlineAccent: 'worked',
+  workHeadlineSuffix: '.',
+  workEmpty: 'No experience listed yet.',
   projectsEyebrow: 'Selected Work',
   projectsHeadlinePrefix: "A few things I've ",
   projectsHeadlineAccent: 'shipped',
@@ -238,6 +260,56 @@ export async function deleteProject(id: string): Promise<void> {
   await databases.deleteDocument(
     APPWRITE_CONFIG.databaseId,
     APPWRITE_CONFIG.collections.projects,
+    id,
+  )
+}
+
+export async function getWorkEntries(): Promise<WorkEntry[]> {
+  if (!isAppwriteConfigured()) return []
+  try {
+    const res = await databases.listDocuments(
+      APPWRITE_CONFIG.databaseId,
+      APPWRITE_CONFIG.collections.work,
+    )
+    const items = res.documents.map((doc) => {
+      const raw = (doc as { data?: string }).data || '{}'
+      const parsed = JSON.parse(raw)
+      return { $id: doc.$id, order: 0, ...parsed } as WorkEntry
+    })
+    return items.sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+  } catch {
+    return []
+  }
+}
+
+export async function createWorkEntry(e: Omit<WorkEntry, '$id'>): Promise<WorkEntry> {
+  const doc = await databases.createDocument(
+    APPWRITE_CONFIG.databaseId,
+    APPWRITE_CONFIG.collections.work,
+    ID.unique(),
+    { data: JSON.stringify(e) },
+    [
+      Permission.read(Role.any()),
+      Permission.update(Role.users()),
+      Permission.delete(Role.users()),
+    ],
+  )
+  return { $id: doc.$id, ...e }
+}
+
+export async function updateWorkEntry(id: string, e: Omit<WorkEntry, '$id'>): Promise<void> {
+  await databases.updateDocument(
+    APPWRITE_CONFIG.databaseId,
+    APPWRITE_CONFIG.collections.work,
+    id,
+    { data: JSON.stringify(e) },
+  )
+}
+
+export async function deleteWorkEntry(id: string): Promise<void> {
+  await databases.deleteDocument(
+    APPWRITE_CONFIG.databaseId,
+    APPWRITE_CONFIG.collections.work,
     id,
   )
 }

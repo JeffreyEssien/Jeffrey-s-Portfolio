@@ -3,9 +3,10 @@
 import { useEffect, useState } from 'react'
 import { fileUrl } from '../../../lib/appwrite'
 import {
-  About, Contact, DEFAULT_ABOUT, DEFAULT_CONTACT, DEFAULT_HERO, DEFAULT_SITE, Hero, Project, Site,
-  createProject, deleteFile, deleteProject, getAbout, getContact, getHero, getProjects, getSite,
-  setAbout, setContact, setHero, setSite, updateProject, uploadFile,
+  About, Contact, DEFAULT_ABOUT, DEFAULT_CONTACT, DEFAULT_HERO, DEFAULT_SITE, Hero, Project, Site, WorkEntry,
+  createProject, createWorkEntry, deleteFile, deleteProject, deleteWorkEntry, getAbout, getContact,
+  getHero, getProjects, getSite, getWorkEntries, setAbout, setContact, setHero, setSite,
+  updateProject, updateWorkEntry, uploadFile,
 } from '../../../lib/content'
 import { Field, FieldGroup, PageHeader, SaveBar, inputCls, useSaveState } from './forms'
 
@@ -30,9 +31,18 @@ export function SiteEditor() {
           <div className="grid grid-cols-2 gap-4">
             <Field label="Home"><input className={inputCls} value={s.navHome} onChange={(e) => setS({ ...s, navHome: e.target.value })} /></Field>
             <Field label="About"><input className={inputCls} value={s.navAbout} onChange={(e) => setS({ ...s, navAbout: e.target.value })} /></Field>
+            <Field label="Experience"><input className={inputCls} value={s.navWork} onChange={(e) => setS({ ...s, navWork: e.target.value })} /></Field>
             <Field label="Projects"><input className={inputCls} value={s.navProjects} onChange={(e) => setS({ ...s, navProjects: e.target.value })} /></Field>
             <Field label="Contact"><input className={inputCls} value={s.navContact} onChange={(e) => setS({ ...s, navContact: e.target.value })} /></Field>
           </div>
+        </FieldGroup>
+
+        <FieldGroup title="Experience section heading" description="Shown above the work history list.">
+          <Field label="Eyebrow label"><input className={inputCls} value={s.workEyebrow} onChange={(e) => setS({ ...s, workEyebrow: e.target.value })} /></Field>
+          <Field label="Headline — start"><input className={inputCls} value={s.workHeadlinePrefix} onChange={(e) => setS({ ...s, workHeadlinePrefix: e.target.value })} /></Field>
+          <Field label="Headline — italic accent word" hint="Rendered in italic serif."><input className={inputCls} value={s.workHeadlineAccent} onChange={(e) => setS({ ...s, workHeadlineAccent: e.target.value })} /></Field>
+          <Field label="Headline — end"><input className={inputCls} value={s.workHeadlineSuffix} onChange={(e) => setS({ ...s, workHeadlineSuffix: e.target.value })} /></Field>
+          <Field label="Empty state text"><input className={inputCls} value={s.workEmpty} onChange={(e) => setS({ ...s, workEmpty: e.target.value })} /></Field>
         </FieldGroup>
 
         <FieldGroup title="Browser tab & SEO">
@@ -296,6 +306,84 @@ function ProjectRow({ project, onChanged }: { project: Project; onChanged: () =>
             </button>
           </div>
         </div>
+      </div>
+    </div>
+  )
+}
+
+export function WorkEditor() {
+  const [entries, setEntries] = useState<WorkEntry[]>([])
+  const [busy, setBusy] = useState(false)
+
+  const reload = async () => setEntries(await getWorkEntries())
+  useEffect(() => { reload() }, [])
+
+  const add = async () => {
+    setBusy(true)
+    try {
+      await createWorkEntry({ role: '', company: '', period: '', location: '', description: '', order: entries.length })
+      await reload()
+    } finally { setBusy(false) }
+  }
+
+  return (
+    <div>
+      <PageHeader title="Experience" description="Your work history shown on the portfolio. Section headings live under Site." />
+      <div className="flex justify-between items-center mb-6">
+        <p className="text-sm text-neutral-500">{entries.length} {entries.length === 1 ? 'entry' : 'entries'}</p>
+        <button onClick={add} disabled={busy} className="px-4 py-2 rounded-lg bg-neutral-900 hover:bg-neutral-700 text-white text-sm font-medium disabled:opacity-50 transition-colors duration-200">
+          + Add entry
+        </button>
+      </div>
+      <div className="space-y-6">
+        {entries.map((e) => <WorkEntryRow key={e.$id} entry={e} onChanged={reload} />)}
+        {entries.length === 0 && <p className="text-sm text-neutral-500 py-8 text-center border border-dashed border-neutral-300 rounded-lg">No entries yet.</p>}
+      </div>
+    </div>
+  )
+}
+
+function WorkEntryRow({ entry, onChanged }: { entry: WorkEntry; onChanged: () => void }) {
+  const [e, setE] = useState<WorkEntry>(entry)
+  const [state, save] = useSaveState()
+
+  const persist = async (next: WorkEntry) => {
+    if (!next.$id) return
+    await updateWorkEntry(next.$id, { role: next.role, company: next.company, period: next.period, location: next.location, description: next.description, order: next.order })
+  }
+
+  const remove = async () => {
+    if (!e.$id) return
+    if (!confirm(`Delete "${e.role || e.company || 'this entry'}"?`)) return
+    await deleteWorkEntry(e.$id)
+    onChanged()
+  }
+
+  return (
+    <div className="border border-neutral-200 rounded-xl p-5 bg-white space-y-4">
+      <div className="grid grid-cols-2 gap-4">
+        <Field label="Role"><input className={inputCls} value={e.role} onChange={(ev) => setE({ ...e, role: ev.target.value })} /></Field>
+        <Field label="Company"><input className={inputCls} value={e.company} onChange={(ev) => setE({ ...e, company: ev.target.value })} /></Field>
+      </div>
+      <div className="grid grid-cols-[1fr_1fr_80px] gap-4">
+        <Field label="Period" hint='e.g. "Jan 2023 – Present"'><input className={inputCls} value={e.period} onChange={(ev) => setE({ ...e, period: ev.target.value })} /></Field>
+        <Field label="Location"><input className={inputCls} value={e.location} onChange={(ev) => setE({ ...e, location: ev.target.value })} /></Field>
+        <Field label="Order"><input type="number" className={inputCls} value={e.order} onChange={(ev) => setE({ ...e, order: Number(ev.target.value) || 0 })} /></Field>
+      </div>
+      <Field label="Description" hint="What you did — plain text or one bullet per line using •.">
+        <textarea className={inputCls + ' h-28'} value={e.description} onChange={(ev) => setE({ ...e, description: ev.target.value })} />
+      </Field>
+      <div className="flex gap-2 justify-end pt-2">
+        <button onClick={remove} className="px-4 py-2 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition-colors duration-200">Delete</button>
+        <button
+          onClick={() => save(() => persist(e))}
+          disabled={state === 'saving'}
+          className={`px-5 py-2 rounded-lg font-medium text-white text-sm disabled:opacity-50 transition-colors duration-200 ${
+            state === 'error' ? 'bg-red-600 hover:bg-red-700' : state === 'saved' ? 'bg-emerald-600' : 'bg-neutral-900 hover:bg-neutral-700'
+          }`}
+        >
+          {state === 'saving' ? 'Saving…' : state === 'saved' ? 'Saved' : state === 'error' ? 'Retry' : 'Save'}
+        </button>
       </div>
     </div>
   )

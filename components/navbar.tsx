@@ -10,9 +10,10 @@ const Navbar = () => {
   const sections = useMemo(() => [
     { id: 'hero', label: site.navHome },
     { id: 'about', label: site.navAbout },
+    { id: 'work', label: site.navWork },
     { id: 'projects', label: site.navProjects },
     { id: 'contact', label: site.navContact },
-  ], [site.navHome, site.navAbout, site.navProjects, site.navContact])
+  ], [site.navHome, site.navAbout, site.navWork, site.navProjects, site.navContact])
   const [active, setActive] = useState('hero')
   const [scrolled, setScrolled] = useState(false)
 
