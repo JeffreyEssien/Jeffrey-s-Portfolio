@@ -41,6 +41,8 @@ export type About = {
   headlinePrefix: string
   headlineAccent: string
   headlineSuffix: string
+  extraHeading: string
+  extraParagraph: string
   educationLabel: string
   educationDegree: string
   educationSchool: string
@@ -130,6 +132,8 @@ export const DEFAULT_ABOUT: About = {
   headlinePrefix: 'I design and build digital products that feel ',
   headlineAccent: 'considered',
   headlineSuffix: ' and perform with intent.',
+  extraHeading: '',
+  extraParagraph: '',
   educationLabel: 'Education',
   educationDegree: 'B.Sc. in Software Engineering',
   educationSchool: 'Babcock University, Nigeria',

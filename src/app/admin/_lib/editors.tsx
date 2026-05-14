@@ -126,6 +126,11 @@ export function AboutEditor() {
           <Field label="Headline — end"><input className={inputCls} value={a.headlineSuffix} onChange={(e) => setA({ ...a, headlineSuffix: e.target.value })} /></Field>
         </FieldGroup>
 
+        <FieldGroup title="Additional paragraph" description="Shown below the headline. Leave the paragraph empty to hide.">
+          <Field label="Heading" hint="Optional. Small uppercase label above the paragraph."><input className={inputCls} value={a.extraHeading} onChange={(e) => setA({ ...a, extraHeading: e.target.value })} /></Field>
+          <Field label="Paragraph"><textarea className={inputCls + ' h-28'} value={a.extraParagraph} onChange={(e) => setA({ ...a, extraParagraph: e.target.value })} /></Field>
+        </FieldGroup>
+
         <FieldGroup title="Education">
           <Field label="Label"><input className={inputCls} value={a.educationLabel} onChange={(e) => setA({ ...a, educationLabel: e.target.value })} /></Field>
           <Field label="Degree"><input className={inputCls} value={a.educationDegree} onChange={(e) => setA({ ...a, educationDegree: e.target.value })} /></Field>

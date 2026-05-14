@@ -24,6 +24,21 @@ export default function About() {
           </div>
         </div>
 
+        {a.extraParagraph?.trim() && (
+          <div className="grid md:grid-cols-12 gap-8 mb-20">
+            <div className="md:col-span-3">
+              {a.extraHeading?.trim() && (
+                <p className="text-xs uppercase tracking-[0.15em] text-neutral-500">{a.extraHeading}</p>
+              )}
+            </div>
+            <div className="md:col-span-9">
+              <p className="text-3xl md:text-5xl font-medium tracking-tight leading-tight text-neutral-900 max-w-3xl">
+                {a.extraParagraph}
+              </p>
+            </div>
+          </div>
+        )}
+
         <div className="grid md:grid-cols-12 gap-8 md:gap-16">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
