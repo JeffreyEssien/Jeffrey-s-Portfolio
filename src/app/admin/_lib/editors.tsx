@@ -10,7 +10,8 @@ import {
 } from '../../../lib/content'
 import { Field, FieldGroup, PageHeader, SaveBar, inputCls, useSaveState } from './forms'
 
-const linesToList = (s: string) => s.split('\n').map((l) => l.trim()).filter(Boolean)
+const linesToList = (s: string) => s.split('\n')
+const cleanLines = (xs: string[]) => xs.map((l) => l.trim()).filter(Boolean)
 
 export function SiteEditor() {
   const [s, setS] = useState<Site>(DEFAULT_SITE)
@@ -104,7 +105,7 @@ export function HeroEditor() {
           </div>
         </FieldGroup>
       </div>
-      <SaveBar state={state} onSave={() => save(() => setHero(h))} />
+      <SaveBar state={state} onSave={() => save(() => setHero({ ...h, taglines: cleanLines(h.taglines) }))} />
     </div>
   )
 }
@@ -163,7 +164,12 @@ export function AboutEditor() {
           </Field>
         </FieldGroup>
       </div>
-      <SaveBar state={state} onSave={() => save(() => setAbout(a))} />
+      <SaveBar state={state} onSave={() => save(() => setAbout({
+        ...a,
+        certifications: cleanLines(a.certifications),
+        technologies: cleanLines(a.technologies),
+        skills: a.skills.filter((sk) => sk.name.trim()),
+      }))} />
     </div>
   )
 }

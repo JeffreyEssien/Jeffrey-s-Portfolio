@@ -2,20 +2,20 @@
 import { Client, Databases, Storage, Users, ID, Permission, Role } from 'node-appwrite'
 
 const {
-  APPWRITE_ENDPOINT = 'https://cloud.appwrite.io/v1',
-  APPWRITE_PROJECT_ID,
+  APPWRITE_ENDPOINT = process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT || 'https://cloud.appwrite.io/v1',
+  APPWRITE_PROJECT_ID = process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID,
   APPWRITE_API_KEY,
   ADMIN_EMAIL,
   ADMIN_PASSWORD,
 } = process.env
 
-for (const [k, v] of Object.entries({ APPWRITE_PROJECT_ID, APPWRITE_API_KEY, ADMIN_EMAIL, ADMIN_PASSWORD })) {
+for (const [k, v] of Object.entries({ APPWRITE_PROJECT_ID, APPWRITE_API_KEY })) {
   if (!v) { console.error(`Missing env: ${k}`); process.exit(1) }
 }
 
 const DB_ID = 'portfolio'
 const BUCKET_ID = 'assets'
-const COLLECTIONS = ['site', 'hero', 'about', 'projects', 'contact']
+const COLLECTIONS = ['site', 'hero', 'about', 'projects', 'work', 'contact']
 
 const client = new Client().setEndpoint(APPWRITE_ENDPOINT).setProject(APPWRITE_PROJECT_ID).setKey(APPWRITE_API_KEY)
 const databases = new Databases(client)
@@ -32,7 +32,15 @@ const swallow409 = async (label, fn) => {
 }
 
 async function main() {
-  await swallow409(`database ${DB_ID}`, () => databases.create(DB_ID, 'Portfolio'))
+  try {
+    await databases.get(DB_ID)
+    log(`exists database ${DB_ID}`)
+  } catch (e) {
+    if (e.code === 404) {
+      await databases.create(DB_ID, 'Portfolio')
+      log(`created database ${DB_ID}`)
+    } else throw e
+  }
 
   const collectionPerms = [
     Permission.read(Role.any()),
@@ -57,24 +65,35 @@ async function main() {
       databases.createDocument(DB_ID, cid, 'main', { data: '{}' }))
   }
 
-  await swallow409(`bucket ${BUCKET_ID}`, () =>
-    storage.createBucket(
-      BUCKET_ID,
-      'Assets',
-      [Permission.read(Role.any()), Permission.create(Role.users()), Permission.update(Role.users()), Permission.delete(Role.users())],
-      false,
-      true,
-      10 * 1024 * 1024,
-      ['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg', 'pdf'],
-    ))
-
-  // admin user
   try {
-    await users.create(ID.unique(), ADMIN_EMAIL, undefined, ADMIN_PASSWORD)
-    log(`created admin user ${ADMIN_EMAIL}`)
+    await storage.getBucket(BUCKET_ID)
+    log(`exists bucket ${BUCKET_ID}`)
   } catch (e) {
-    if (e.code === 409) log(`admin user exists ${ADMIN_EMAIL}`)
-    else throw e
+    if (e.code === 404) {
+      await storage.createBucket(
+        BUCKET_ID,
+        'Assets',
+        [Permission.read(Role.any()), Permission.create(Role.users()), Permission.update(Role.users()), Permission.delete(Role.users())],
+        false,
+        true,
+        10 * 1024 * 1024,
+        ['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg', 'pdf'],
+      )
+      log(`created bucket ${BUCKET_ID}`)
+    } else throw e
+  }
+
+  // admin user (only if creds provided)
+  if (ADMIN_EMAIL && ADMIN_PASSWORD) {
+    try {
+      await users.create(ID.unique(), ADMIN_EMAIL, undefined, ADMIN_PASSWORD)
+      log(`created admin user ${ADMIN_EMAIL}`)
+    } catch (e) {
+      if (e.code === 409) log(`admin user exists ${ADMIN_EMAIL}`)
+      else throw e
+    }
+  } else {
+    log('skipped admin user (ADMIN_EMAIL/ADMIN_PASSWORD not set)')
   }
 
   console.log('\n✅ Appwrite setup complete')
