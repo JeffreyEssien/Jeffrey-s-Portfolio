@@ -10,10 +10,14 @@ const NG_DIRECT_TERMS = ['nigeria', 'lagos', 'abuja', 'port harcourt', 'ibadan',
 const WORLDWIDE_TERMS = ['worldwide', 'anywhere', 'any country', 'remote-first', 'remote first', 'fully remote', 'global remote', 'any timezone']
 const LOC_EXCLUDES = ['us only', 'usa only', 'us-only', 'us residents', 'us citizens', 'eu only', 'eu-only', 'europe only', 'uk only', 'canada only', 'must reside in', 'must be located in the us', 'must be based in']
 
+const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+
 function uniqueHits(haystack: string, needles: string[]): string[] {
   const hits = new Set<string>()
   for (const n of needles) {
-    if (n && haystack.includes(n.toLowerCase())) hits.add(n)
+    if (!n) continue
+    const re = new RegExp(`(^|[^a-z0-9])${escapeRe(n.toLowerCase())}([^a-z0-9]|$)`, 'i')
+    if (re.test(haystack)) hits.add(n)
   }
   return [...hits]
 }
@@ -56,13 +60,14 @@ export function scoreJob(raw: RawJob, source: Job['source'], profile: JobProfile
   }
 
   const titleHits = uniqueHits(titleLc, profile.roleKeywords.map((k) => k.toLowerCase()))
+  if (titleHits.length === 0) return null
   const bodyHits = uniqueHits(bodyLc, profile.skillKeywords.map((k) => k.toLowerCase()))
   const titleScore = titleHits.length * 8
   const bodyScore = Math.min(20, bodyHits.length * 2)
   const ageDays = raw.postedAt ? Math.max(0, (Date.now() - new Date(raw.postedAt).getTime()) / 86400000) : 30
   const recencyBoost = Math.max(0, Math.min(10, 10 - ageDays))
   const ngFlag = decideNgFlag(titleLc, bodyLc, locLc)
-  const score = Math.round(titleScore + bodyScore + recencyBoost + (ngFlag === 'direct' ? 6 : ngFlag === 'worldwide' ? 3 : 0))
+  const score = Math.round(titleScore + bodyScore + recencyBoost + (ngFlag === 'direct' ? 2 : ngFlag === 'worldwide' ? 1 : 0))
 
   if (score < 8) return null
 

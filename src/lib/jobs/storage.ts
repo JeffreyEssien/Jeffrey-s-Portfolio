@@ -1,6 +1,13 @@
-import { ID, Permission, Query, Role } from 'appwrite'
+import { Permission, Query, Role } from 'appwrite'
 import { APPWRITE_CONFIG, databases, isAppwriteConfigured } from '../appwrite'
 import { DEFAULT_JOB_PROFILE, Job, JobAction, JobActionState, JobProfile } from './types'
+
+function docId(id: string): string {
+  let h = 0
+  for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) | 0
+  const safe = id.replace(/[^a-zA-Z0-9_-]/g, '_').slice(-24)
+  return `${(h >>> 0).toString(36)}_${safe}`.slice(0, 36)
+}
 
 const DB = APPWRITE_CONFIG.databaseId
 const C_JOBS = APPWRITE_CONFIG.collections.jobs
@@ -47,34 +54,6 @@ export async function listJobs(limit = 200): Promise<Job[]> {
   }
 }
 
-export async function upsertJob(job: Job): Promise<{ created: boolean }> {
-  try {
-    await databases.updateDocument(DB, C_JOBS, job.id, { data: JSON.stringify(job) })
-    return { created: false }
-  } catch {
-    try {
-      await databases.createDocument(DB, C_JOBS, job.id, { data: JSON.stringify(job) }, perms)
-      return { created: true }
-    } catch (err) {
-      console.error('upsertJob failed', job.id, err)
-      return { created: false }
-    }
-  }
-}
-
-export async function pruneOldJobs(beforeIso: string): Promise<number> {
-  if (!isAppwriteConfigured()) return 0
-  const res = await databases.listDocuments(DB, C_JOBS, [Query.limit(500)])
-  let removed = 0
-  for (const d of res.documents) {
-    const j = safeJson<Job>((d as { data?: string }).data, {} as Job)
-    if (j.postedAt && j.postedAt < beforeIso) {
-      try { await databases.deleteDocument(DB, C_JOBS, d.$id); removed++ } catch {}
-    }
-  }
-  return removed
-}
-
 export async function listJobActions(): Promise<JobAction[]> {
   if (!isAppwriteConfigured()) return []
   try {
@@ -86,14 +65,15 @@ export async function listJobActions(): Promise<JobAction[]> {
 }
 
 export async function setJobAction(jobId: string, state: JobActionState, notes = ''): Promise<void> {
+  const id = docId(jobId)
   const action: JobAction = { jobId, state, notes, updatedAt: new Date().toISOString() }
   try {
-    await databases.updateDocument(DB, C_ACTIONS, jobId, { data: JSON.stringify(action) })
+    await databases.updateDocument(DB, C_ACTIONS, id, { data: JSON.stringify(action) })
   } catch {
-    await databases.createDocument(DB, C_ACTIONS, jobId, { data: JSON.stringify(action) }, perms)
+    await databases.createDocument(DB, C_ACTIONS, id, { data: JSON.stringify(action) }, perms)
   }
 }
 
 export async function clearJobAction(jobId: string): Promise<void> {
-  try { await databases.deleteDocument(DB, C_ACTIONS, jobId) } catch {}
+  try { await databases.deleteDocument(DB, C_ACTIONS, docId(jobId)) } catch {}
 }

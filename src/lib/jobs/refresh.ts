@@ -1,11 +1,14 @@
 import { fetchAdzuna } from './adapters/adzuna'
 import { fetchAshby } from './adapters/ashby'
 import { fetchGreenhouse } from './adapters/greenhouse'
+import { fetchGoogleSearch } from './adapters/google-search'
 import { fetchHnHiring } from './adapters/hn-hiring'
+import { fetchHotNigerianJobs } from './adapters/hot-nigerian-jobs'
+import { fetchJooble } from './adapters/jooble'
 import { fetchLever } from './adapters/lever'
 import { fetchRemotive } from './adapters/remotive'
 import { scoreJob } from './matcher'
-import { getJobProfile, pruneOldJobs, setJobProfile, upsertJob } from './storage'
+import { getJobProfileServer, pruneOldJobsServer, setJobProfileServer, upsertJobServer } from './server-storage'
 import { AdapterResult, Job, JobProfile, JobSource } from './types'
 
 const TIMEOUT_MS = 12000
@@ -26,15 +29,18 @@ export type RefreshSummary = {
 }
 
 export async function refreshJobs(): Promise<RefreshSummary> {
-  const profile = await getJobProfile()
+  const profile = await getJobProfileServer()
   const adapterRuns: Promise<AdapterResult>[] = []
 
   if (profile.sources.adzuna) adapterRuns.push(withTimeout(fetchAdzuna(profile.roleKeywords, profile.companiesNG), 'adzuna'))
+  if (profile.sources.jooble) adapterRuns.push(withTimeout(fetchJooble(profile.roleKeywords), 'jooble'))
   if (profile.sources.greenhouse) adapterRuns.push(withTimeout(fetchGreenhouse(profile.greenhouseSlugs), 'greenhouse'))
   if (profile.sources.lever) adapterRuns.push(withTimeout(fetchLever(profile.leverSlugs), 'lever'))
   if (profile.sources.ashby) adapterRuns.push(withTimeout(fetchAshby(profile.ashbySlugs), 'ashby'))
   if (profile.sources.remotive) adapterRuns.push(withTimeout(fetchRemotive(), 'remotive'))
   if (profile.sources['hn-hiring']) adapterRuns.push(withTimeout(fetchHnHiring(profile.roleKeywords.slice(0, 3).join(' ') || 'react'), 'hn-hiring'))
+  if (profile.sources['hot-nigerian-jobs']) adapterRuns.push(withTimeout(fetchHotNigerianJobs(), 'hot-nigerian-jobs'))
+  if (profile.sources['google-search']) adapterRuns.push(withTimeout(fetchGoogleSearch(profile.roleKeywords), 'google-search'))
 
   const settled = await Promise.allSettled(adapterRuns)
   const errors: string[] = []
@@ -63,14 +69,14 @@ export async function refreshJobs(): Promise<RefreshSummary> {
   const isNew = (j: Job) => !lastRunAt || j.postedAt > lastRunAt
 
   for (const j of byId.values()) {
-    const r = await upsertJob(j)
+    const r = await upsertJobServer(j)
     totalUpserted++
     if (r.created) totalNew++
     perSource[j.source] = (perSource[j.source] ?? 0) + 1
   }
 
   const sixtyDaysAgo = new Date(Date.now() - 60 * 86400000).toISOString()
-  await pruneOldJobs(sixtyDaysAgo)
+  await pruneOldJobsServer(sixtyDaysAgo)
 
   const newJobs = [...byId.values()].filter(isNew).sort((a, b) => b.score - a.score)
   const topMatches = newJobs.slice(0, 10)
@@ -80,7 +86,7 @@ export async function refreshJobs(): Promise<RefreshSummary> {
     lastRunAt: new Date().toISOString(),
     lastRunCounts: perSource,
   }
-  await setJobProfile(updatedProfile)
+  await setJobProfileServer(updatedProfile)
 
   return { totalNew, totalUpserted, perSource, errors, topMatches }
 }

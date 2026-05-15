@@ -10,10 +10,11 @@ import { Field, FieldGroup, PageHeader, SaveBar, inputCls, useSaveState } from '
 
 type Tab = 'inbox' | 'saved' | 'applied' | 'dismissed' | 'profile'
 
-const SOURCES: JobSource[] = ['adzuna', 'greenhouse', 'lever', 'ashby', 'remotive', 'hn-hiring']
+const SOURCES: JobSource[] = ['adzuna', 'jooble', 'greenhouse', 'lever', 'ashby', 'remotive', 'hn-hiring', 'hot-nigerian-jobs', 'google-search']
 const SOURCE_LABELS: Record<JobSource, string> = {
-  adzuna: 'Adzuna NG', greenhouse: 'Greenhouse', lever: 'Lever',
-  ashby: 'Ashby', remotive: 'Remotive', 'hn-hiring': 'HN Hiring',
+  adzuna: 'Adzuna', jooble: 'Jooble', greenhouse: 'Greenhouse', lever: 'Lever',
+  ashby: 'Ashby', remotive: 'Remotive', 'hn-hiring': 'HN Hiring', 'hot-nigerian-jobs': 'Hot Nigerian Jobs',
+  'google-search': 'Google Search',
 }
 
 export function JobsEditor() {
@@ -24,6 +25,8 @@ export function JobsEditor() {
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
   const [refreshMsg, setRefreshMsg] = useState<string>('')
+  const [refreshErrors, setRefreshErrors] = useState<string[]>([])
+  const [ngOnly, setNgOnly] = useState(true)
   const [saveState, save] = useSaveState()
 
   const reload = useCallback(async () => {
@@ -42,13 +45,14 @@ export function JobsEditor() {
   }, [actions])
 
   const filtered = useMemo(() => {
-    const list = jobs.slice().sort((a, b) => b.score - a.score)
+    let list = jobs.slice().sort((a, b) => b.score - a.score)
+    if (ngOnly) list = list.filter((j) => j.scoreBreakdown.ngFlag !== 'unclear')
     if (tab === 'inbox') return list.filter((j) => !actionMap.has(j.id))
     if (tab === 'saved') return list.filter((j) => actionMap.get(j.id)?.state === 'saved')
     if (tab === 'applied') return list.filter((j) => actionMap.get(j.id)?.state === 'applied')
     if (tab === 'dismissed') return list.filter((j) => actionMap.get(j.id)?.state === 'dismissed')
     return []
-  }, [tab, jobs, actionMap])
+  }, [tab, jobs, actionMap, ngOnly])
 
   const onAction = async (jobId: string, state: JobActionState) => {
     await setJobAction(jobId, state, actionMap.get(jobId)?.notes ?? '')
@@ -65,12 +69,13 @@ export function JobsEditor() {
   }
 
   const triggerRefresh = async () => {
-    setRefreshing(true); setRefreshMsg('Running…')
+    setRefreshing(true); setRefreshMsg('Running…'); setRefreshErrors([])
     try {
       const res = await fetch('/api/jobs/refresh', { method: 'POST' })
-      const json = await res.json() as { totalNew?: number; totalUpserted?: number; errors?: string[] }
-      if (!res.ok) throw new Error(json.errors?.join('; ') || 'refresh failed')
+      const json = await res.json() as { totalNew?: number; totalUpserted?: number; errors?: string[]; error?: string }
+      if (!res.ok) throw new Error(json.error || json.errors?.join('; ') || 'refresh failed')
       setRefreshMsg(`${json.totalNew ?? 0} new · ${json.totalUpserted ?? 0} total upserted${json.errors?.length ? ` · errors: ${json.errors.length}` : ''}`)
+      setRefreshErrors(json.errors ?? [])
       await reload()
     } catch (e) {
       setRefreshMsg(`Error: ${(e as Error).message}`)
@@ -91,12 +96,14 @@ export function JobsEditor() {
   }
 
   const counts = useMemo(() => {
-    const inbox = jobs.filter((j) => !actionMap.has(j.id)).length
-    const saved = actions.filter((a) => a.state === 'saved').length
-    const applied = actions.filter((a) => a.state === 'applied').length
-    const dismissed = actions.filter((a) => a.state === 'dismissed').length
+    const pool = ngOnly ? jobs.filter((j) => j.scoreBreakdown.ngFlag !== 'unclear') : jobs
+    const inbox = pool.filter((j) => !actionMap.has(j.id)).length
+    const poolIds = new Set(pool.map((j) => j.id))
+    const saved = actions.filter((a) => a.state === 'saved' && poolIds.has(a.jobId)).length
+    const applied = actions.filter((a) => a.state === 'applied' && poolIds.has(a.jobId)).length
+    const dismissed = actions.filter((a) => a.state === 'dismissed' && poolIds.has(a.jobId)).length
     return { inbox, saved, applied, dismissed }
-  }, [jobs, actions, actionMap])
+  }, [jobs, actions, actionMap, ngOnly])
 
   return (
     <div>
@@ -111,6 +118,23 @@ export function JobsEditor() {
           {profile.lastRunAt ? `Last run: ${new Date(profile.lastRunAt).toLocaleString('en-NG', { timeZone: 'Africa/Lagos' })}` : 'No run yet'}
         </span>
         {refreshMsg && <span className="text-xs text-neutral-700 ml-2">{refreshMsg}</span>}
+      </div>
+
+      {refreshErrors.length > 0 && (
+        <details className="mb-6 text-xs">
+          <summary className="cursor-pointer text-amber-700">Show {refreshErrors.length} adapter error{refreshErrors.length === 1 ? '' : 's'}</summary>
+          <ul className="mt-2 space-y-1 text-neutral-600 font-mono">
+            {refreshErrors.map((e, i) => <li key={i}>• {e}</li>)}
+          </ul>
+        </details>
+      )}
+
+      <div className="flex items-center gap-3 mb-4">
+        <label className="flex items-center gap-2 text-sm">
+          <input type="checkbox" checked={ngOnly} onChange={(e) => setNgOnly(e.target.checked)} />
+          <span className="text-neutral-700">Nigeria-friendly only</span>
+          <span className="text-xs text-neutral-400">(hides roles whose Nigeria-eligibility is unclear)</span>
+        </label>
       </div>
 
       <div className="flex flex-wrap gap-1 border-b border-neutral-200 mb-8">

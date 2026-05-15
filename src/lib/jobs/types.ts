@@ -1,4 +1,4 @@
-export type JobSource = 'adzuna' | 'greenhouse' | 'lever' | 'ashby' | 'remotive' | 'hn-hiring'
+export type JobSource = 'adzuna' | 'jooble' | 'greenhouse' | 'lever' | 'ashby' | 'remotive' | 'hn-hiring' | 'hot-nigerian-jobs' | 'google-search'
 
 export type NgFlag = 'direct' | 'worldwide' | 'unclear'
 
@@ -70,15 +70,15 @@ export type RawJob = {
 }
 
 export const DEFAULT_JOB_PROFILE: JobProfile = {
-  roleKeywords: ['frontend', 'front-end', 'front end', 'full-stack', 'fullstack', 'full stack', 'react', 'next.js', 'nextjs', 'graduate', 'junior', 'entry-level', 'intern'],
+  roleKeywords: ['developer', 'engineer', 'frontend', 'front-end', 'front end', 'full-stack', 'fullstack', 'full stack', 'backend', 'back-end', 'web developer', 'software engineer', 'software developer', 'mobile developer', 'mobile engineer', 'react', 'react native', 'next.js', 'nextjs', 'javascript', 'typescript', 'graduate trainee', 'graduate program', 'junior', 'entry-level', 'entry level', 'intern'],
   skillKeywords: ['react', 'typescript', 'javascript', 'next.js', 'tailwind', 'node', 'firebase', 'appwrite', 'react native', 'figma', 'rest api', 'jwt', 'ci/cd'],
   seniority: ['graduate', 'junior', 'mid'],
   locations: ['Nigeria', 'Lagos', 'Abuja', 'Remote', 'Worldwide', 'Africa'],
   excludes: ['senior', 'principal', 'staff engineer', 'engineering manager', 'security clearance', 'us citizens only', 'must be located in the us', 'must be located in the eu', 'php developer', '.net developer'],
-  sources: { adzuna: true, greenhouse: true, lever: true, ashby: true, remotive: true, 'hn-hiring': true },
-  greenhouseSlugs: ['paystack', 'flutterwave', 'andela', 'moniepoint'],
-  leverSlugs: ['andela', 'flutterwave'],
-  ashbySlugs: [],
+  sources: { adzuna: true, jooble: true, greenhouse: true, lever: true, ashby: true, remotive: true, 'hn-hiring': true, 'hot-nigerian-jobs': true, 'google-search': true },
+  greenhouseSlugs: ['paystack', 'moniepoint'],
+  leverSlugs: [],
+  ashbySlugs: ['andela'],
   companiesNG: [
     'Access Bank', 'GTBank', 'Zenith Bank', 'UBA', 'FCMB', 'Sterling Bank', 'Stanbic IBTC',
     'Fidelity Bank', 'Ecobank', 'Greenwich Merchant Bank', 'Kuda Bank', 'Carbon', 'PalmPay',
