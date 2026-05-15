@@ -11,6 +11,7 @@ const SECTIONS = [
   { href: '/admin/projects', title: 'Projects', desc: 'Add, edit, reorder, and delete projects with images.' },
   { href: '/admin/contact', title: 'Contact', desc: 'Email, CV upload, contact section copy.' },
   { href: '/admin/cv', title: 'CV / Resume', desc: 'Build, preview, and publish the downloadable CV. ATS-safe and creative templates.' },
+  { href: '/admin/jobs', title: 'Jobs', desc: 'Auto-refreshed twice daily — find Nigerian + worldwide-remote roles matched to your CV.' },
 ]
 
 export default function AdminOverview() {

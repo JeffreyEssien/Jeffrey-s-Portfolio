@@ -12,6 +12,9 @@ export const APPWRITE_CONFIG = {
     contact: process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_CONTACT || 'contact',
     work: process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_WORK || 'work',
     cv: process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_CV || 'cv',
+    jobs: process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_JOBS || 'jobs',
+    jobActions: process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_JOB_ACTIONS || 'job_actions',
+    jobProfile: process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_JOB_PROFILE || 'job_profile',
   },
 }
 
