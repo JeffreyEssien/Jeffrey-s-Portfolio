@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { PageHeader } from './_lib/forms'
+import { publishedAt } from '../../lib/public-content'
 
 const SECTIONS = [
   { href: '/admin/site', title: 'Site', desc: 'Brand name, navigation labels, page metadata, footer.' },
@@ -18,6 +19,11 @@ export default function AdminOverview() {
   return (
     <div>
       <PageHeader title="Overview" description="Pick a section to edit." />
+      <div className="border border-neutral-200 rounded-xl p-5 mb-6">
+        <h2 className="font-medium">Portfolio backup</h2>
+        <p className="text-sm text-neutral-600 mt-2">{publishedAt ? `This deployment includes a copy of your public content from ${new Date(publishedAt).toLocaleDateString('en-GB', { timeZone: 'Africa/Lagos' })}. Visitors can still see it if the database is unavailable.` : 'No public content backup has been published yet.'}</p>
+        <p className="text-xs text-neutral-500 mt-2">Your public backup refreshes with each successful site build. New edits appear live while Appwrite is available.</p>
+      </div>
       <div className="grid sm:grid-cols-2 gap-3">
         {SECTIONS.map((s) => (
           <Link

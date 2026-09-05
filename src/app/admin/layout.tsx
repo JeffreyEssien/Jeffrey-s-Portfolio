@@ -23,7 +23,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname()
   const [checking, setChecking] = useState(true)
   const [email, setEmail] = useState<string | null>(null)
+  const [navOpen, setNavOpen] = useState(false)
   const isLogin = pathname === '/admin/login'
+
+  useEffect(() => { setNavOpen(false) }, [pathname])
 
   useEffect(() => {
     let mounted = true
@@ -55,13 +58,47 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (isLogin) return <div className="bg-neutral-50 text-neutral-900 min-h-screen">{children}</div>
 
   return (
-    <div className="min-h-screen bg-neutral-50 text-neutral-900 flex">
-      <aside className="w-64 bg-white border-r border-neutral-200 flex flex-col fixed inset-y-0 left-0">
-        <div className="px-6 py-6 border-b border-neutral-200">
+    <div className="min-h-screen bg-neutral-50 text-neutral-900 md:flex">
+      <header className="md:hidden sticky top-0 z-30 flex items-center justify-between bg-white border-b border-neutral-200 px-4 h-14">
+        <div>
+          <p className="text-[10px] uppercase tracking-[0.15em] text-neutral-500 leading-none">Portfolio</p>
+          <p className="text-sm font-semibold leading-tight">Admin</p>
+        </div>
+        <button
+          onClick={() => setNavOpen((o) => !o)}
+          aria-label="Toggle navigation"
+          aria-expanded={navOpen}
+          className="inline-flex items-center justify-center w-10 h-10 rounded-md border border-neutral-200 text-neutral-700"
+        >
+          {navOpen ? (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
+          ) : (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+          )}
+        </button>
+      </header>
+
+      {navOpen && (
+        <div
+          onClick={() => setNavOpen(false)}
+          className="md:hidden fixed inset-0 z-30 bg-neutral-900/40"
+          aria-hidden
+        />
+      )}
+
+      <aside
+        className={`bg-white border-r border-neutral-200 flex flex-col fixed inset-y-0 left-0 z-40 w-64 transform transition-transform duration-200 ${
+          navOpen ? 'translate-x-0' : '-translate-x-full'
+        } md:translate-x-0`}
+      >
+        <div className="px-6 py-6 border-b border-neutral-200 hidden md:block">
           <p className="text-xs uppercase tracking-[0.15em] text-neutral-500">Portfolio</p>
           <p className="text-base font-semibold">Admin</p>
         </div>
-        <nav className="flex-1 px-3 py-4 space-y-1">
+        <div className="md:hidden h-14 flex items-center px-4 border-b border-neutral-200">
+          <p className="text-sm font-semibold">Admin</p>
+        </div>
+        <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
           {NAV.map((item) => {
             const active = pathname === item.href
             return (
@@ -85,8 +122,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           {email && <p className="px-3 pt-2 text-xs text-neutral-400 truncate">{email}</p>}
         </div>
       </aside>
-      <main className="flex-1 ml-64">
-        <div className={`${pathname === '/admin/cv' ? 'max-w-[1400px]' : 'max-w-3xl'} mx-auto px-6 md:px-10 py-12 bg-white min-h-screen border-l border-neutral-200`}>{children}</div>
+      <main className="flex-1 md:ml-64">
+        <div className={`${pathname === '/admin/cv' ? 'max-w-[1400px]' : 'max-w-3xl'} mx-auto px-4 sm:px-6 md:px-10 py-6 md:py-12 bg-white min-h-screen md:border-l border-neutral-200`}>{children}</div>
       </main>
     </div>
   )

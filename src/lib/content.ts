@@ -1,4 +1,4 @@
-import { ID, Permission, Role } from 'appwrite'
+import { ID, Permission, Query, Role } from 'appwrite'
 import { APPWRITE_CONFIG, databases, isAppwriteConfigured, storage } from './appwrite'
 
 export type Site = {
@@ -72,6 +72,13 @@ export type Project = {
   link: string
   imageFileId: string
   order: number
+  sourceUrl?: string
+  technologies?: string[]
+  role?: string
+  problem?: string
+  solution?: string
+  results?: string
+  featured?: boolean
 }
 
 export type Contact = {
@@ -206,33 +213,43 @@ async function writeSingleton<T>(collectionId: string, value: T): Promise<void> 
 const SITE_COLLECTION =
   process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_SITE || 'site'
 
-export const getSite = () => readSingleton(SITE_COLLECTION, DEFAULT_SITE)
+export const getSite = (fallback = DEFAULT_SITE) => readSingleton(SITE_COLLECTION, fallback)
 export const setSite = (v: Site) => writeSingleton(SITE_COLLECTION, v)
 
-export const getHero = () => readSingleton(APPWRITE_CONFIG.collections.hero, DEFAULT_HERO)
+export const getHero = (fallback = DEFAULT_HERO) => readSingleton(APPWRITE_CONFIG.collections.hero, fallback)
 export const setHero = (v: Hero) => writeSingleton(APPWRITE_CONFIG.collections.hero, v)
 
-export const getAbout = () => readSingleton(APPWRITE_CONFIG.collections.about, DEFAULT_ABOUT)
+export const getAbout = (fallback = DEFAULT_ABOUT) => readSingleton(APPWRITE_CONFIG.collections.about, fallback)
 export const setAbout = (v: About) => writeSingleton(APPWRITE_CONFIG.collections.about, v)
 
-export const getContact = () => readSingleton(APPWRITE_CONFIG.collections.contact, DEFAULT_CONTACT)
+export const getContact = (fallback = DEFAULT_CONTACT) => readSingleton(APPWRITE_CONFIG.collections.contact, fallback)
 export const setContact = (v: Contact) => writeSingleton(APPWRITE_CONFIG.collections.contact, v)
 
-export async function getProjects(): Promise<Project[]> {
-  if (!isAppwriteConfigured()) return []
+async function listContent(collection: string) {
+  const documents = []
+  let cursor: string | undefined
+  do {
+    const page = await databases.listDocuments(APPWRITE_CONFIG.databaseId, collection, [
+      Query.limit(100), Query.orderAsc('$id'), ...(cursor ? [Query.cursorAfter(cursor)] : []),
+    ])
+    documents.push(...page.documents)
+    cursor = page.documents.length === 100 ? page.documents.at(-1)?.$id : undefined
+  } while (cursor)
+  return documents
+}
+
+export async function getProjects(fallback: Project[] = []): Promise<Project[]> {
+  if (!isAppwriteConfigured()) return fallback
   try {
-    const res = await databases.listDocuments(
-      APPWRITE_CONFIG.databaseId,
-      APPWRITE_CONFIG.collections.projects,
-    )
-    const items = res.documents.map((doc) => {
+    const documents = await listContent(APPWRITE_CONFIG.collections.projects)
+    const items = documents.map((doc) => {
       const raw = (doc as { data?: string }).data || '{}'
       const parsed = JSON.parse(raw)
       return { $id: doc.$id, order: 0, ...parsed } as Project
     })
     return items.sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
   } catch {
-    return []
+    return fallback
   }
 }
 
@@ -268,21 +285,18 @@ export async function deleteProject(id: string): Promise<void> {
   )
 }
 
-export async function getWorkEntries(): Promise<WorkEntry[]> {
-  if (!isAppwriteConfigured()) return []
+export async function getWorkEntries(fallback: WorkEntry[] = []): Promise<WorkEntry[]> {
+  if (!isAppwriteConfigured()) return fallback
   try {
-    const res = await databases.listDocuments(
-      APPWRITE_CONFIG.databaseId,
-      APPWRITE_CONFIG.collections.work,
-    )
-    const items = res.documents.map((doc) => {
+    const documents = await listContent(APPWRITE_CONFIG.collections.work)
+    const items = documents.map((doc) => {
       const raw = (doc as { data?: string }).data || '{}'
       const parsed = JSON.parse(raw)
       return { $id: doc.$id, order: 0, ...parsed } as WorkEntry
     })
     return items.sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
   } catch {
-    return []
+    return fallback
   }
 }
 

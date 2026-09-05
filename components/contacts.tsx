@@ -2,17 +2,37 @@
 
 import { motion } from 'framer-motion'
 import useSWR from 'swr'
-import { fileUrl } from '../src/lib/appwrite'
-import { DEFAULT_CONTACT, DEFAULT_SITE, getContact, getSite } from '../src/lib/content'
+import { publicAssetUrl } from '../src/lib/public-content'
+import { publishedContact, publishedSite, getPublicContact, getPublicSite } from '../src/lib/public-content'
 
 const Contact = () => {
-  const { data } = useSWR('contact', getContact, { fallbackData: DEFAULT_CONTACT })
-  const { data: siteData } = useSWR('site', getSite, { fallbackData: DEFAULT_SITE })
-  const c = data ?? DEFAULT_CONTACT
-  const site = siteData ?? DEFAULT_SITE
+  const { data } = useSWR('contact', getPublicContact, { fallbackData: publishedContact })
+  const { data: siteData } = useSWR('site', getPublicSite, { fallbackData: publishedSite })
+  const c = data ?? publishedContact
+  const site = siteData ?? publishedSite
 
   const mailto = `mailto:${c.email}?subject=${encodeURIComponent(c.ctaSubject)}`
-  const cvHref = c.cvFileId ? fileUrl(c.cvFileId) : '/Jeffrey_Essien_CV.pdf'
+  const cvHref = c.cvFileId ? publicAssetUrl(c.cvFileId) : '/Jeffrey_Essien_CV.pdf'
+  const cvFilename = "Jeffrey's CV.pdf"
+  const handleCvDownload = async (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (!cvHref) return
+    e.preventDefault()
+    try {
+      const res = await fetch(cvHref)
+      if (!res.ok) throw new Error('CV download failed')
+      const blob = await res.blob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = cvFilename
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+      URL.revokeObjectURL(url)
+    } catch {
+      window.open(cvHref, '_blank', 'noopener,noreferrer')
+    }
+  }
   const year = new Date().getFullYear()
   const copyright = (site.footerCopyright || '').replace('{year}', String(year))
 
@@ -51,9 +71,9 @@ const Contact = () => {
                 {c.ctaCvLabel && (
                   <a
                     href={cvHref}
-                    target={c.cvFileId ? '_blank' : undefined}
+                    onClick={handleCvDownload}
                     rel="noopener noreferrer"
-                    download={!c.cvFileId}
+                    download={cvFilename}
                     className="inline-flex items-center px-6 py-3 rounded-full border border-neutral-300 text-sm font-medium text-neutral-900 hover:bg-neutral-100 transition-colors duration-200"
                   >
                     {c.ctaCvLabel}

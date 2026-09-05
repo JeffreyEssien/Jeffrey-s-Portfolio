@@ -2,11 +2,20 @@
   "name": "portfolio",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=22.20.0 <23"
+  },
   "scripts": {
     "dev": "next dev",
+    "prebuild": "node --env-file-if-exists=.env.local scripts/publish-content.mjs --optional",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint src components tests scripts playwright.config.ts",
+    "typecheck": "next typegen && tsc --noEmit --incremental false",
+    "test:unit": "node --experimental-strip-types --test tests/unit/*.test.mjs",
+    "content:snapshot": "node --env-file=.env.local scripts/publish-content.mjs",
+    "test:browser": "playwright test",
+    "test": "npm run test:unit && npm run test:browser"
   },
   "dependencies": {
     "@react-pdf/renderer": "^4.5.1",
@@ -20,6 +29,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@playwright/test": "^1.63.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

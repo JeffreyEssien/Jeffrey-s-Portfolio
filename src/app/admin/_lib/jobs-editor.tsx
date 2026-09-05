@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { getAbout, getHero } from '../../../lib/content'
+import { adminRequestHeaders } from '../../../lib/auth'
 import {
   clearJobAction, getJobProfile, listJobActions, listJobs, setJobAction, setJobProfile,
 } from '../../../lib/jobs/storage'
@@ -71,7 +72,7 @@ export function JobsEditor() {
   const triggerRefresh = async () => {
     setRefreshing(true); setRefreshMsg('Running…'); setRefreshErrors([])
     try {
-      const res = await fetch('/api/jobs/refresh', { method: 'POST' })
+      const res = await fetch('/api/jobs/refresh', { method: 'POST', headers: await adminRequestHeaders() })
       const json = await res.json() as { totalNew?: number; totalUpserted?: number; errors?: string[]; error?: string }
       if (!res.ok) throw new Error(json.error || json.errors?.join('; ') || 'refresh failed')
       setRefreshMsg(`${json.totalNew ?? 0} new · ${json.totalUpserted ?? 0} total upserted${json.errors?.length ? ` · errors: ${json.errors.length}` : ''}`)

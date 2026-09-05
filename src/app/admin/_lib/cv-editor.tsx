@@ -216,7 +216,7 @@ export function CvEditor() {
           </FieldGroup>
 
           <FieldGroup title="Personal info">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Field label="Full name"><input className={inputCls} value={cv.personal.fullName} onChange={(e) => updatePersonal({ fullName: e.target.value })} /></Field>
               <Field label="Headline / title"><input className={inputCls} value={cv.personal.headline} onChange={(e) => updatePersonal({ headline: e.target.value })} /></Field>
               <Field label="Email"><input className={inputCls} value={cv.personal.email} onChange={(e) => updatePersonal({ email: e.target.value })} /></Field>
@@ -284,7 +284,7 @@ export function CvEditor() {
         <SaveBar state={state} onSave={() => save(async () => { const cleaned = cleanCv(cv); await setCv(cleaned); setCvState(cleaned) })} />
       </div>
 
-      <div className="lg:sticky lg:top-6 lg:self-start lg:h-[calc(100vh-3rem)] border border-neutral-200 rounded-xl overflow-hidden bg-neutral-100">
+      <div className="h-[70vh] lg:h-[calc(100vh-3rem)] lg:sticky lg:top-6 lg:self-start border border-neutral-200 rounded-xl overflow-hidden bg-neutral-100">
         <PDFViewer style={{ width: '100%', height: '100%', border: 'none' }} showToolbar>
           {doc}
         </PDFViewer>
@@ -345,7 +345,7 @@ function ExperienceEditor({ section, onChange }: { section: Extract<CvSection, {
           onDown={() => update(moveItem(section.items, i, 1))}
           onRemove={() => update(section.items.filter((_, j) => j !== i))}
         >
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Field label="Role"><input className={inputCls} value={it.role} onChange={(e) => { const n = section.items.slice(); n[i] = { ...it, role: e.target.value }; update(n) }} /></Field>
             <Field label="Company"><input className={inputCls} value={it.company} onChange={(e) => { const n = section.items.slice(); n[i] = { ...it, company: e.target.value }; update(n) }} /></Field>
             <Field label="Location"><input className={inputCls} value={it.location} onChange={(e) => { const n = section.items.slice(); n[i] = { ...it, location: e.target.value }; update(n) }} /></Field>
@@ -371,7 +371,7 @@ function EducationEditor({ section, onChange }: { section: Extract<CvSection, { 
           onDown={() => update(moveItem(section.items, i, 1))}
           onRemove={() => update(section.items.filter((_, j) => j !== i))}
         >
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Field label="Degree"><input className={inputCls} value={it.degree} onChange={(e) => { const n = section.items.slice(); n[i] = { ...it, degree: e.target.value }; update(n) }} /></Field>
             <Field label="School"><input className={inputCls} value={it.school} onChange={(e) => { const n = section.items.slice(); n[i] = { ...it, school: e.target.value }; update(n) }} /></Field>
             <Field label="Location"><input className={inputCls} value={it.location} onChange={(e) => { const n = section.items.slice(); n[i] = { ...it, location: e.target.value }; update(n) }} /></Field>
@@ -421,7 +421,7 @@ function ProjectsListEditor({ section, onChange }: { section: Extract<CvSection,
           onDown={() => update(moveItem(section.items, i, 1))}
           onRemove={() => update(section.items.filter((_, j) => j !== i))}
         >
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Field label="Title"><input className={inputCls} value={it.title} onChange={(e) => { const n = section.items.slice(); n[i] = { ...it, title: e.target.value }; update(n) }} /></Field>
             <Field label="Link"><input className={inputCls} value={it.link} onChange={(e) => { const n = section.items.slice(); n[i] = { ...it, link: e.target.value }; update(n) }} /></Field>
           </div>

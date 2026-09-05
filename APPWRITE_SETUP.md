@@ -85,3 +85,44 @@ GitHub schedules can be delayed, and scheduled workflows in public repositories
 [are disabled after 60 days without repository activity](https://docs.github.com/en/actions/managing-workflow-runs-and-deployments/managing-workflow-runs/disabling-and-enabling-a-workflow).
 Check that the workflow remains enabled. Continuous availability requires a plan
 that does not pause for inactivity.
+
+## Public content backup and project case studies
+
+Every production build attempts to capture the currently public site copy,
+projects, experience, project images, and published CV. These are bundled with
+the site. If Appwrite is unavailable, public components use that snapshot;
+the snapshot's images and PDF are served by the portfolio itself.
+
+Run `npm run content:snapshot` to refresh it manually while Appwrite is active.
+Commit `src/lib/published-content.json` and `public/published-assets/` with your
+site changes so a later build can fall back to the last committed snapshot.
+The build retains the previous complete snapshot when Appwrite cannot be read;
+a failed manual refresh exits with an error and does not replace it.
+
+This is a copy of public content, not a backup of private admin data. Live edits
+still appear through Appwrite. The outage fallback reflects the last build or
+manual capture; redeploy after deleting or changing content that must also be
+removed from the fallback. Previously published assets are retained on disk
+to avoid breaking older snapshots.
+
+In `/admin/projects`, new project drafts are saved in this browser only. They
+are never written to Appwrite until **Publish project**. Draft images remain in
+memory until published. Published project edits require **Publish changes**;
+choosing an image no longer saves the other fields automatically. Case-study
+fields, a source-code link, technologies, and featured ordering are optional.
+Existing project links keep working. Projects with case-study content link to
+`/projects/<document-id>` and have their own page metadata.
+
+Public project cards offer **Learn more**, which opens the project's saved
+description, role, technologies, challenge, approach, and results in a modal.
+Empty optional sections are omitted. The live-site link remains a separate
+action, and the modal also links to the full project page. It supports Escape,
+backdrop dismissal, keyboard focus containment, and returning focus to its trigger.
+
+The jobs refresh and project-preview endpoints now require a valid Appwrite
+JWT from a signed-in user; the jobs cron can still use `JOBS_CRON_SECRET`.
+Set server-side `APPWRITE_ADMIN_USER_ID` to your Appwrite user's ID to restrict
+these browser-triggered endpoints to that owner. Without it, they accept any
+authenticated Appwrite user, matching the existing single-owner setup. These
+endpoint checks do not change Appwrite collection permissions; those must be
+restricted separately before enabling additional user accounts.

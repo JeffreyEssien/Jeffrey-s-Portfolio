@@ -11,22 +11,15 @@ export default function Home() {
   return (
     <>
       <Navbar />
-      <main className="scroll-smooth">
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[60] focus:bg-white focus:p-4">Skip to content</a>
+      <main id="main-content" className="scroll-smooth" tabIndex={-1}>
         <section id="hero">
           <Hero />
         </section>
-        <section id="about">
-          <About />
-        </section>
-        <section id="work">
-          <Work />
-        </section>
-        <section id="projects">
-          <Projects />
-        </section>
-        <section id="contact">
-          <Contact />
-        </section>
+        <About />
+        <Work />
+        <Projects />
+        <Contact />
       </main>
     </>
   )
