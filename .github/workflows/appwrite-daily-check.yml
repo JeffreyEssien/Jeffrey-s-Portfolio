@@ -1,0 +1,24 @@
+name: Appwrite daily database check
+
+on:
+  schedule:
+    # 08:23 WAT (07:23 UTC) daily.
+    - cron: '23 7 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check-database:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read projects from Appwrite
+        env:
+          APPWRITE_ENDPOINT: ${{ vars.APPWRITE_ENDPOINT }}
+          APPWRITE_PROJECT_ID: ${{ vars.APPWRITE_PROJECT_ID }}
+          APPWRITE_DATABASE_ID: ${{ vars.APPWRITE_DATABASE_ID }}
+          APPWRITE_PROJECTS_COLLECTION_ID: ${{ vars.APPWRITE_PROJECTS_COLLECTION_ID }}
+        run: node scripts/check-appwrite.mjs

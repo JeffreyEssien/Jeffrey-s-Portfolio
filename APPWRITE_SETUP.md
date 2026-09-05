@@ -53,3 +53,35 @@ For `site`, `hero`, `about`, `contact` — create one document with **Document I
 npm run dev
 ```
 Visit `/admin/login`, sign in, edit everything.
+
+## Daily database availability check
+
+`.github/workflows/appwrite-daily-check.yml` reads the public projects collection
+daily at approximately **08:23 WAT** using GitHub Actions. It makes no changes to
+your content and needs no Appwrite API key. Failed requests retry up to three
+times and then fail the workflow, which can trigger GitHub Actions notifications.
+
+To activate:
+
+1. Push the workflow and `scripts/check-appwrite.mjs` to the repository's default branch.
+2. In GitHub → Settings → Secrets and variables → Actions → Variables, set:
+   - `APPWRITE_ENDPOINT`: the same value as `NEXT_PUBLIC_APPWRITE_ENDPOINT`, including `/v1`.
+   - `APPWRITE_PROJECT_ID`: the same value as `NEXT_PUBLIC_APPWRITE_PROJECT_ID`.
+   - Optional `APPWRITE_DATABASE_ID` (default `portfolio`).
+   - Optional `APPWRITE_PROJECTS_COLLECTION_ID` (default `projects`).
+3. Under Actions → Appwrite daily database check → Run workflow, verify the first run.
+4. Enable failed-workflow notifications in your GitHub notification settings.
+
+Local manual check (Node 20.6+): `node --env-file=.env.local scripts/check-appwrite.mjs`.
+
+**This is an availability check, not a guaranteed keep-alive.** Appwrite's
+[free-plan policy](https://appwrite.io/changelog/entry/2026-02-20-1) says projects
+pause after seven days without development activity in the Console. Ordinary
+database traffic is not documented as sufficient. Open and actively maintain
+your project in the Console regularly; resume an already-paused project there.
+Scheduled Appwrite functions stop while paused, so this check runs externally.
+
+GitHub schedules can be delayed, and scheduled workflows in public repositories
+[are disabled after 60 days without repository activity](https://docs.github.com/en/actions/managing-workflow-runs-and-deployments/managing-workflow-runs/disabling-and-enabling-a-workflow).
+Check that the workflow remains enabled. Continuous availability requires a plan
+that does not pause for inactivity.
