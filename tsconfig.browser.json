@@ -2,5 +2,5 @@
   "extends": "./tsconfig.json",
   "compilerOptions": { "plugins": [{ "name": "next" }] },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next-test/types/**/*.ts"],
-  "exclude": ["node_modules", ".next", ".next-build"]
+  "exclude": ["node_modules", ".next", ".next-build", ".next-dev"]
 }

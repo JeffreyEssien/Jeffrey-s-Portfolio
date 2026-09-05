@@ -11,7 +11,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint src components tests scripts playwright.config.ts",
-    "typecheck": "next typegen && tsc --project tsconfig.build.json --noEmit --incremental false",
+    "typecheck": "next typegen && tsc --noEmit --incremental false",
     "test:unit": "node --experimental-strip-types --test tests/unit/*.test.mjs",
     "content:snapshot": "node --env-file=.env.local scripts/publish-content.mjs",
     "test:browser": "playwright test",

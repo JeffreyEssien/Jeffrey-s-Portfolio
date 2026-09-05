@@ -12,6 +12,7 @@ test('development, browser tests and production have independent caches; start s
     const start = config(PHASE_PRODUCTION_SERVER)
     process.env.PORTFOLIO_TEST_SERVER = '1'
     const browser = config(PHASE_DEVELOPMENT_SERVER)
+    assert.equal(build.distDir, '.next', 'Vercel expects the standard production output directory')
     assert.equal(new Set([dev.distDir, build.distDir, browser.distDir]).size, 3)
     assert.equal(new Set([dev.typescript.tsconfigPath, build.typescript.tsconfigPath, browser.typescript.tsconfigPath]).size, 3)
     assert.equal(start.distDir, build.distDir)
