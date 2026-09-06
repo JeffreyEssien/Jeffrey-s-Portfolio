@@ -2,12 +2,12 @@
 
 import { motion } from 'framer-motion'
 import useSWR from 'swr'
-import { DEFAULT_SITE, getSite, getWorkEntries } from '../src/lib/content'
+import { publishedSite, publishedWork, getPublicSite, getPublicWork } from '../src/lib/public-content'
 
 export default function Work() {
-  const { data: siteData } = useSWR('site', getSite, { fallbackData: DEFAULT_SITE })
-  const { data: entries, isLoading } = useSWR('work', getWorkEntries, { fallbackData: [] })
-  const site = siteData ?? DEFAULT_SITE
+  const { data: siteData } = useSWR('site', getPublicSite, { fallbackData: publishedSite })
+  const { data: entries, isLoading } = useSWR('work', getPublicWork, { fallbackData: publishedWork })
+  const site = siteData ?? publishedSite
   const items = entries ?? []
 
   return (

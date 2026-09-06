@@ -44,7 +44,7 @@ export function SaveBar({ state, onSave }: { state: SaveState; onSave: () => voi
     state === 'saved' ? 'Saved' :
     state === 'error' ? 'Error — retry' : 'Save changes'
   return (
-    <div className="sticky bottom-0 -mx-6 md:-mx-10 mt-12 px-6 md:px-10 py-4 border-t border-neutral-200 bg-white/90 backdrop-blur-sm flex justify-end">
+    <div className="sticky bottom-0 -mx-4 sm:-mx-6 md:-mx-10 mt-12 px-4 sm:px-6 md:px-10 py-4 border-t border-neutral-200 bg-white/90 backdrop-blur-sm flex justify-end">
       <button
         onClick={onSave}
         disabled={state === 'saving'}

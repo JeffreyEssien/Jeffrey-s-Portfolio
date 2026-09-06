@@ -3,11 +3,11 @@
 import { motion } from 'framer-motion'
 import { Typewriter } from 'react-simple-typewriter'
 import useSWR from 'swr'
-import { DEFAULT_HERO, getHero } from '../src/lib/content'
+import { publishedHero, getPublicHero } from '../src/lib/public-content'
 
 const Hero = () => {
-  const { data } = useSWR('hero', getHero, { fallbackData: DEFAULT_HERO })
-  const hero = data ?? DEFAULT_HERO
+  const { data } = useSWR('hero', getPublicHero, { fallbackData: publishedHero })
+  const hero = data ?? publishedHero
 
   return (
     <section className="min-h-screen flex flex-col justify-center px-6 md:px-8 max-w-6xl mx-auto pt-32 pb-24">

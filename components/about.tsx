@@ -2,11 +2,11 @@
 
 import { motion } from 'framer-motion'
 import useSWR from 'swr'
-import { DEFAULT_ABOUT, getAbout } from '../src/lib/content'
+import { publishedAbout, getPublicAbout } from '../src/lib/public-content'
 
 export default function About() {
-  const { data } = useSWR('about', getAbout, { fallbackData: DEFAULT_ABOUT })
-  const a = data ?? DEFAULT_ABOUT
+  const { data } = useSWR('about', getPublicAbout, { fallbackData: publishedAbout })
+  const a = data ?? publishedAbout
 
   return (
     <section id="about" className="py-32 px-6 md:px-8">

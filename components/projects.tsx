@@ -1,22 +1,19 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import { useState } from 'react'
 import useSWR from 'swr'
-import { fileUrl } from '../src/lib/appwrite'
-import { DEFAULT_SITE, getProjects, getSite } from '../src/lib/content'
-
-const normalizeUrl = (u: string) => {
-  const v = (u || '').trim()
-  if (!v) return '#'
-  if (/^https?:\/\//i.test(v)) return v
-  if (v.startsWith('//')) return 'https:' + v
-  return 'https://' + v
-}
+import { publicAssetUrl } from '../src/lib/public-content'
+import { publishedSite, publishedProjects, getPublicProjects, getPublicSite } from '../src/lib/public-content'
+import { externalUrl, sortProjects } from '../src/lib/project-utils'
+import type { Project } from '../src/lib/content'
+import ProjectDialog from './project-dialog'
 
 const Projects = () => {
-  const { data: projects, isLoading } = useSWR('projects', getProjects, { fallbackData: [] })
-  const { data: siteData } = useSWR('site', getSite, { fallbackData: DEFAULT_SITE })
-  const site = siteData ?? DEFAULT_SITE
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null)
+  const { data: projects, isLoading } = useSWR('projects', getPublicProjects, { fallbackData: publishedProjects })
+  const { data: siteData } = useSWR('site', getPublicSite, { fallbackData: publishedSite })
+  const site = siteData ?? publishedSite
 
   return (
     <section id="projects" className="py-32 px-6 md:px-8">
@@ -43,23 +40,20 @@ const Projects = () => {
             </div>
           ))}
 
-          {projects?.map((p, i) => (
-            <motion.a
+          {sortProjects(projects ?? []).map((p, i) => (
+            <motion.article
               key={p.$id ?? i}
-              href={normalizeUrl(p.link)}
-              target="_blank"
-              rel="noopener noreferrer"
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: (i % 2) * 0.1 }}
-              className="group block"
+              className="group flex flex-col"
             >
-              <div className="aspect-[4/3] bg-neutral-100 rounded-2xl overflow-hidden mb-6 ring-1 ring-neutral-200/60 transition-all duration-300 group-hover:ring-neutral-300 group-hover:shadow-[0_20px_40px_-12px_rgba(0,0,0,0.08)]">
+              <button type="button" onClick={() => setSelectedProject(p)} aria-label={`View details for ${p.title}`} aria-haspopup="dialog" className="block w-full aspect-[4/3] bg-neutral-100 rounded-2xl overflow-hidden mb-6 ring-1 ring-neutral-200/60 transition-all duration-300 group-hover:ring-neutral-300 group-hover:shadow-[0_20px_40px_-12px_rgba(0,0,0,0.08)]">
                 {p.imageFileId ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
-                    src={fileUrl(p.imageFileId)}
+                    src={publicAssetUrl(p.imageFileId)}
                     alt={p.title}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
                   />
@@ -68,15 +62,22 @@ const Projects = () => {
                     {p.title.charAt(0) || '·'}
                   </div>
                 )}
-              </div>
+              </button>
               <div className="flex items-start justify-between gap-4">
                 <div>
+                  {p.featured && <p className="text-xs uppercase tracking-widest text-neutral-500 mb-2">Featured project</p>}
                   <h3 className="text-lg font-medium text-neutral-900 mb-1">{p.title || 'Untitled'}</h3>
                   <p className="text-sm text-neutral-600 leading-relaxed line-clamp-2">{p.description}</p>
+                  {!!p.technologies?.length && <p className="text-xs text-neutral-500 mt-3">{p.technologies.join(' · ')}</p>}
                 </div>
-                <span className="text-neutral-400 group-hover:text-neutral-900 group-hover:translate-x-1 transition-all duration-200 mt-1" aria-hidden>↗</span>
               </div>
-            </motion.a>
+              <div className="mt-auto pt-6 flex flex-wrap items-center gap-4">
+                <button type="button" onClick={() => setSelectedProject(p)} aria-label={`Learn more about ${p.title}`} aria-haspopup="dialog" className="inline-flex items-center gap-2 rounded-full bg-neutral-900 px-5 py-3 text-sm font-medium text-white hover:bg-neutral-700 transition-colors">
+                  Learn more <span aria-hidden>+</span>
+                </button>
+                {externalUrl(p.link) && <a href={externalUrl(p.link)} target="_blank" rel="noopener noreferrer" aria-label={`Visit ${p.title} live site`} className="px-2 py-3 text-sm text-neutral-600 hover:text-neutral-900 transition-colors">Visit live site ↗</a>}
+              </div>
+            </motion.article>
           ))}
 
           {!isLoading && projects?.length === 0 && (
@@ -84,6 +85,7 @@ const Projects = () => {
           )}
         </div>
       </div>
+      {selectedProject && <ProjectDialog project={selectedProject} onClose={() => setSelectedProject(null)} />}
     </section>
   )
 }

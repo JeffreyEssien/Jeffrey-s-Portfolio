@@ -3,10 +3,10 @@
 import { useEffect, useState } from 'react'
 import { fileUrl } from '../../../lib/appwrite'
 import {
-  About, Contact, DEFAULT_ABOUT, DEFAULT_CONTACT, DEFAULT_HERO, DEFAULT_SITE, Hero, Project, Site, WorkEntry,
-  createProject, createWorkEntry, deleteFile, deleteProject, deleteWorkEntry, getAbout, getContact,
-  getHero, getProjects, getSite, getWorkEntries, setAbout, setContact, setHero, setSite,
-  updateProject, updateWorkEntry, uploadFile,
+  About, Contact, DEFAULT_ABOUT, DEFAULT_CONTACT, DEFAULT_HERO, DEFAULT_SITE, Hero, Site, WorkEntry,
+  createWorkEntry, deleteFile, deleteWorkEntry, getAbout, getContact,
+  getHero, getSite, getWorkEntries, setAbout, setContact, setHero, setSite,
+  updateWorkEntry, uploadFile,
 } from '../../../lib/content'
 import { Field, FieldGroup, PageHeader, SaveBar, inputCls, useSaveState } from './forms'
 
@@ -29,7 +29,7 @@ export function SiteEditor() {
         </FieldGroup>
 
         <FieldGroup title="Navigation labels">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Field label="Home"><input className={inputCls} value={s.navHome} onChange={(e) => setS({ ...s, navHome: e.target.value })} /></Field>
             <Field label="About"><input className={inputCls} value={s.navAbout} onChange={(e) => setS({ ...s, navAbout: e.target.value })} /></Field>
             <Field label="Experience"><input className={inputCls} value={s.navWork} onChange={(e) => setS({ ...s, navWork: e.target.value })} /></Field>
@@ -83,7 +83,7 @@ export function HeroEditor() {
         </FieldGroup>
 
         <FieldGroup title="Headline">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Field label="Greeting"><input className={inputCls} value={h.greeting} onChange={(e) => setH({ ...h, greeting: e.target.value })} /></Field>
             <Field label="Name (italic)"><input className={inputCls} value={h.name} onChange={(e) => setH({ ...h, name: e.target.value })} /></Field>
           </div>
@@ -99,7 +99,7 @@ export function HeroEditor() {
         </FieldGroup>
 
         <FieldGroup title="Call to action buttons">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Field label="Primary (filled)"><input className={inputCls} value={h.ctaPrimary} onChange={(e) => setH({ ...h, ctaPrimary: e.target.value })} /></Field>
             <Field label="Secondary (outline)"><input className={inputCls} value={h.ctaSecondary} onChange={(e) => setH({ ...h, ctaSecondary: e.target.value })} /></Field>
           </div>
@@ -179,148 +179,7 @@ export function AboutEditor() {
   )
 }
 
-export function ProjectsEditor() {
-  const [projects, setProjects] = useState<Project[]>([])
-  const [busy, setBusy] = useState(false)
-
-  const reload = async () => setProjects(await getProjects())
-  useEffect(() => { reload() }, [])
-
-  const add = async () => {
-    setBusy(true)
-    try {
-      await createProject({ title: '', description: '', link: '', imageFileId: '', order: projects.length })
-      await reload()
-    } finally { setBusy(false) }
-  }
-
-  return (
-    <div>
-      <PageHeader title="Projects" description="The work shown on your portfolio. Section headings live under Site." />
-      <div className="flex justify-between items-center mb-6">
-        <p className="text-sm text-neutral-500">{projects.length} {projects.length === 1 ? 'project' : 'projects'}</p>
-        <button onClick={add} disabled={busy} className="px-4 py-2 rounded-lg bg-neutral-900 hover:bg-neutral-700 text-white text-sm font-medium disabled:opacity-50 transition-colors duration-200">
-          + Add project
-        </button>
-      </div>
-      <div className="space-y-6">
-        {projects.map((p) => <ProjectRow key={p.$id} project={p} onChanged={reload} />)}
-        {projects.length === 0 && <p className="text-sm text-neutral-500 py-8 text-center border border-dashed border-neutral-300 rounded-lg">No projects yet.</p>}
-      </div>
-    </div>
-  )
-}
-
-function ProjectRow({ project, onChanged }: { project: Project; onChanged: () => void }) {
-  const [p, setP] = useState<Project>(project)
-  const [state, save] = useSaveState()
-  const [uploading, setUploading] = useState(false)
-  const [fetching, setFetching] = useState(false)
-
-  const normalizeLink = (u: string) => {
-    const v = (u || '').trim()
-    if (!v) return ''
-    if (/^https?:\/\//i.test(v)) return v
-    if (v.startsWith('//')) return 'https:' + v
-    return 'https://' + v
-  }
-
-  const persist = async (next: Project) => {
-    const id = next.$id
-    if (!id) return
-    const link = normalizeLink(next.link)
-    if (link !== next.link) { next = { ...next, link }; setP(next) }
-    await updateProject(id, { title: next.title, description: next.description, link, imageFileId: next.imageFileId, order: next.order })
-  }
-
-  const onFile = async (f: File | null) => {
-    if (!f || !p.$id) return
-    setUploading(true)
-    try {
-      const oldId = p.imageFileId
-      const newId = await uploadFile(f)
-      const next = { ...p, imageFileId: newId }
-      setP(next)
-      await persist(next)
-      if (oldId) await deleteFile(oldId)
-    } finally { setUploading(false) }
-  }
-
-  const fetchFromLink = async () => {
-    if (!p.link || !p.$id) return
-    setFetching(true)
-    try {
-      const res = await fetch(`/api/og-preview?url=${encodeURIComponent(normalizeLink(p.link))}`)
-      if (!res.ok) throw new Error(`Preview fetch failed (${res.status})`)
-      const blob = await res.blob()
-      const ext = (blob.type.split('/')[1] || 'jpg').split(';')[0]
-      const file = new File([blob], `preview.${ext}`, { type: blob.type || 'image/jpeg' })
-      const oldId = p.imageFileId
-      const newId = await uploadFile(file)
-      const next = { ...p, imageFileId: newId }
-      setP(next)
-      await persist(next)
-      if (oldId) await deleteFile(oldId)
-    } catch (err) {
-      alert(err instanceof Error ? err.message : 'Could not fetch preview')
-    } finally { setFetching(false) }
-  }
-
-  const remove = async () => {
-    if (!p.$id) return
-    if (!confirm(`Delete "${p.title || 'this project'}"?`)) return
-    if (p.imageFileId) await deleteFile(p.imageFileId)
-    await deleteProject(p.$id)
-    onChanged()
-  }
-
-  return (
-    <div className="border border-neutral-200 rounded-xl p-5 bg-white">
-      <div className="grid md:grid-cols-[180px_1fr] gap-5">
-        <div>
-          <div className="aspect-[4/3] bg-neutral-100 border border-neutral-200 rounded-lg overflow-hidden mb-2">
-            {p.imageFileId ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={fileUrl(p.imageFileId)} alt="" className="w-full h-full object-cover" />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-xs text-neutral-400">No image</div>
-            )}
-          </div>
-          <input type="file" accept="image/*" onChange={(e) => onFile(e.target.files?.[0] ?? null)} className="text-xs w-full" />
-          <button
-            type="button"
-            onClick={fetchFromLink}
-            disabled={!p.link || fetching || uploading}
-            className="mt-2 w-full px-3 py-1.5 rounded-md text-xs font-medium border border-neutral-300 text-neutral-700 hover:bg-neutral-50 disabled:opacity-50 transition-colors duration-200"
-          >
-            {fetching ? 'Fetching…' : 'Fetch from link'}
-          </button>
-          {uploading && <p className="text-xs text-neutral-500 mt-1">Uploading…</p>}
-        </div>
-        <div className="space-y-4">
-          <Field label="Title"><input className={inputCls} value={p.title} onChange={(e) => setP({ ...p, title: e.target.value })} /></Field>
-          <Field label="Description"><textarea className={inputCls + ' h-20'} value={p.description} onChange={(e) => setP({ ...p, description: e.target.value })} /></Field>
-          <div className="grid grid-cols-[1fr_100px] gap-4">
-            <Field label="Link"><input className={inputCls} value={p.link} onChange={(e) => setP({ ...p, link: e.target.value })} /></Field>
-            <Field label="Order"><input type="number" className={inputCls} value={p.order} onChange={(e) => setP({ ...p, order: Number(e.target.value) || 0 })} /></Field>
-          </div>
-          <div className="flex gap-2 justify-end pt-2">
-            <button onClick={remove} className="px-4 py-2 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition-colors duration-200">Delete</button>
-            <button
-              onClick={() => save(() => persist(p))}
-              disabled={state === 'saving'}
-              className={`px-5 py-2 rounded-lg font-medium text-white text-sm disabled:opacity-50 transition-colors duration-200 ${
-                state === 'error' ? 'bg-red-600 hover:bg-red-700' : state === 'saved' ? 'bg-emerald-600' : 'bg-neutral-900 hover:bg-neutral-700'
-              }`}
-            >
-              {state === 'saving' ? 'Saving…' : state === 'saved' ? 'Saved' : state === 'error' ? 'Retry' : 'Save'}
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
+export { ProjectsEditor } from './projects-editor'
 
 export function WorkEditor() {
   const [entries, setEntries] = useState<WorkEntry[]>([])
@@ -372,7 +231,7 @@ function WorkEntryRow({ entry, onChanged }: { entry: WorkEntry; onChanged: () =>
 
   return (
     <div className="border border-neutral-200 rounded-xl p-5 bg-white space-y-4">
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Field label="Role"><input className={inputCls} value={e.role} onChange={(ev) => setE({ ...e, role: ev.target.value })} /></Field>
         <Field label="Company"><input className={inputCls} value={e.company} onChange={(ev) => setE({ ...e, company: ev.target.value })} /></Field>
       </div>
@@ -435,7 +294,7 @@ export function ContactEditor() {
         </FieldGroup>
 
         <FieldGroup title="Buttons">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Field label="Email button label"><input className={inputCls} value={c.ctaEmailLabel} onChange={(e) => setC({ ...c, ctaEmailLabel: e.target.value })} /></Field>
             <Field label="CV button label"><input className={inputCls} value={c.ctaCvLabel} onChange={(e) => setC({ ...c, ctaCvLabel: e.target.value })} /></Field>
           </div>

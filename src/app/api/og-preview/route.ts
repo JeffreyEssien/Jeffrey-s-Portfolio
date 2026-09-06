@@ -1,4 +1,5 @@
 import { NextRequest } from 'next/server'
+import { isAuthenticatedAdmin } from '../../../lib/server-auth'
 
 export const runtime = 'nodejs'
 
@@ -43,6 +44,7 @@ async function tryFetchImage(url: string): Promise<Response | null> {
 }
 
 export async function GET(req: NextRequest) {
+  if (!(await isAuthenticatedAdmin(req))) return new Response('Sign in to fetch a preview.', { status: 401 })
   const target = req.nextUrl.searchParams.get('url')
   if (!target) return new Response('Missing url', { status: 400 })
 

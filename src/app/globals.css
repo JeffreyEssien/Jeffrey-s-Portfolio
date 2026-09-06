@@ -11,6 +11,15 @@ html {
   scroll-behavior: smooth;
 }
 
+section[id] { scroll-margin-top: 6rem; }
+
+:focus-visible { outline: 2px solid #171717; outline-offset: 4px; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
 body {
   font-family: var(--font-sans), system-ui, sans-serif;
   font-feature-settings: "ss01", "cv11";

@@ -1,0 +1,200 @@
+{
+  "publishedAt": "2026-09-05T06:41:55.117Z",
+  "assets": {
+    "6a85db5900231977ce71": "/published-assets/499aca54997274ea22603657.gif",
+    "6a05d3be002ee1ea7850": "/published-assets/9c697d2818e94bc4e7fadbc6.jpg",
+    "6a0adf1d000ee7134fec": "/published-assets/499aca54997274ea22603657.gif",
+    "6a16d4ee003889ddeca0": "/published-assets/845a31cc28fc399174341140.pdf"
+  },
+  "hero": {
+    "availabilityLabel": "Available for new work",
+    "greeting": "Hello, I'm",
+    "name": "Jeffrey",
+    "subheadline": "A solution oriented software engineer building & scaling thoughtful projects.",
+    "taglines": [
+      "Seasoned Front-End Developer",
+      "DevOps Engineer",
+      "SEO specialist",
+      "Mobile App Builder",
+      "UI Implementation Expert",
+      "UX Specialist",
+      "Solution Oriented Engineer",
+      "Developer at scale"
+    ],
+    "ctaPrimary": "View Projects",
+    "ctaSecondary": "Contact Me"
+  },
+  "site": {
+    "brand": "Jeffrey Essien",
+    "navHome": "Home",
+    "navAbout": "About",
+    "navWork": "Experience",
+    "navProjects": "Work",
+    "navContact": "Contact",
+    "metaTitle": "Jeffrey Essien — Software Engineer",
+    "metaDescription": "DevOps Engineer, Front-end developer, mobile builder, UX-obsessed engineer.",
+    "footerCopyright": "© {year} Jeffrey Essien",
+    "footerTagline": "Designed & built with care",
+    "workEyebrow": "Experience",
+    "workHeadlinePrefix": "Places I've ",
+    "workHeadlineAccent": "worked",
+    "workHeadlineSuffix": ".",
+    "workEmpty": "No experience listed yet.",
+    "projectsEyebrow": "Selected Work",
+    "projectsHeadlinePrefix": "A few things I've ",
+    "projectsHeadlineAccent": "shipped",
+    "projectsHeadlineSuffix": ".",
+    "projectsEmpty": "No projects yet."
+  },
+  "contact": {
+    "eyebrow": "Contact",
+    "headlinePrefix": "Let's build something ",
+    "headlineAccent": "together",
+    "headlineSuffix": ".",
+    "body": "Always open to new projects, collaborations, or a quick conversation. The fastest way to reach me is by email.",
+    "ctaEmailLabel": "Send an email",
+    "ctaCvLabel": "Download CV",
+    "emailLinkLabel": "",
+    "email": "jeffreye306@gmail.com",
+    "ctaSubject": "Let's work together",
+    "cvFileId": "6a16d4ee003889ddeca0"
+  },
+  "about": {
+    "eyebrow": "About",
+    "headlinePrefix": "I build, manage & scale digital products that feel ",
+    "headlineAccent": "considered",
+    "headlineSuffix": " and perform with intent.",
+    "extraHeading": "My mentality ",
+    "extraParagraph": "I'm a believer that almost every problem can be solved with just the right software.\nAnd even already existing solutions can be made better with the right mind",
+    "educationLabel": "Education",
+    "educationDegree": "B.Sc. in Software Engineering",
+    "educationSchool": "Babcock University, Nigeria",
+    "educationPeriod": "Grade: 2:1 (2022 – 2025)",
+    "certificationsLabel": "Certifications",
+    "certifications": [
+      "Google Machine Learning Crash Course – Google",
+      "React Native for Beginners – CodeWithMosh",
+      "Learn Next.js – Codecademy",
+      "Microsoft Certified: Power BI Data Analyst Associate",
+      "Database Administration Fundamentals – New Horizons",
+      "AWS - Cloud Practitioner"
+    ],
+    "skillsLabel": "Skills",
+    "skills": [
+      {
+        "name": "JavaScript",
+        "level": 95
+      },
+      {
+        "name": "TypeScript",
+        "level": 92
+      },
+      {
+        "name": "React & Next.js",
+        "level": 94
+      },
+      {
+        "name": "React Native",
+        "level": 88
+      },
+      {
+        "name": "Tailwind & ShadCN/UI",
+        "level": 90
+      },
+      {
+        "name": "Azure DevOps",
+        "level": 81
+      },
+      {
+        "name": "Suse Rancher",
+        "level": 75
+      },
+      {
+        "name": "Pipeline Automation",
+        "level": 90
+      }
+    ],
+    "stackLabel": "Stack",
+    "technologies": [
+      "Firebase",
+      "AI API Integration",
+      "Azure DevOps",
+      "Amazon Web Services",
+      "JWT Auth",
+      "Redis",
+      "Serverless APIs",
+      "Postman",
+      "Rancher Prime",
+      "Long Horn",
+      "CI/CD",
+      "Figma",
+      "Rabbit mq",
+      "Vercel",
+      "Netlify"
+    ]
+  },
+  "projects": [
+    {
+      "title": "Xélle.ng",
+      "description": "I built XELLE end-to-end for a Nigerian high-end lifestyle brand everything from the database schema to the admin dashboard. The brief was simple: make it reliable enough that payment failures and overselling are never the client's problem. That shaped every technical decision on the project.",
+      "link": "https://www.xelle.ng",
+      "imageFileId": "6a85db5900231977ce71",
+      "order": 0,
+      "$id": "69f314f900193946bad1"
+    },
+    {
+      "title": "Zuta ya",
+      "description": "ZúTa Ya started as a meat delivery brief and grew into something much larger. By the time it shipped, it was a unified platform handling a storefront, butchery services, a grill house menu, event bookings, subscriptions, and a full operations backend all in one codebase.",
+      "link": "https://www.zutayang.com",
+      "imageFileId": "6a05d3be002ee1ea7850",
+      "order": 1,
+      "$id": "69f316400002936d7e87"
+    },
+    {
+      "title": "Chatmate",
+      "description": "Student mental health services are stretched thin. This platform gives students a private, always available space to talk and knows exactly when the conversation needs a human instead.",
+      "link": "https://student-therapy-chatbot-fe.vercel.app/",
+      "imageFileId": "6a0adf1d000ee7134fec",
+      "order": 2,
+      "$id": "6a0acad30012f28f5297"
+    }
+  ],
+  "work": [
+    {
+      "role": "DevOps Engineer",
+      "company": "Access Bank Plc",
+      "period": "October 2025 - present",
+      "location": "Lagos, VI",
+      "description": "• Orchestrated containerized application deployments across enterprise Kubernetes environments using SUSE Rancher, supporting 20+ applications/projects and ensuring consistent release quality and platform stability across multiple environments\n• Designed and implemented CI pipelines from the ground up for multiple development teams, standardizing build, test, and integration workflows and reducing manual release overhead\n• Embedded automated static code analysis and security scanning into over a 100 CI pipelines, enabling continuous compliance checks and early vulnerability detection without manual intervention\n• Diagnosed and resolved complex infrastructure and application failures by systematically analyzing logs across Kubernetes (SUSE Rancher) and Azure DevOps environments, reducing mean time to resolution by 30%\n• Maintained and iteratively improved CI pipelines across a multi-project portfolio, implementing versioning controls, dependency updates, and performance optimizations to support evolving engineering requirements\n• Architected and delivered end-to-end CD workflows for 20+ applications, enabling automated, reliable software releases and reducing deployment time from 2 hours+ to about 30 minutes\n• Implemented API performance profiling within Azure DevOps environments, analyzing response times, resource utilization, and latency bottlenecks to identify performance regressions and optimize application responsiveness and reliability",
+      "order": 0,
+      "$id": "6a1577aa00079ad68865"
+    },
+    {
+      "role": "Frontend Developer",
+      "company": "Roothub",
+      "period": "May 2021 - October 2021",
+      "location": "Uyo, Akwa Ibom ",
+      "description": "• Engineered complex, state-driven application logic using modern frontend frameworks, delivering scalable and maintainable user-facing features across multiple production codebases\n• Led a cross-functional development team through the full product lifecycle from ideation and technical scoping through to build, QA, and production release ensuring on time delivery and engineering quality\n• Facilitated structured troubleshooting sessions with engineering team members to systematically identify and resolve blockers, reducing downtime and maintaining development velocity under pressure\n• Integrated third-party and internal REST APIs into production applications, owning end-to-end implementation including authentication, error handling, data transformation, and reliability testing\n",
+      "order": 1,
+      "$id": "6a0531fa001599b99d73"
+    },
+    {
+      "role": "Frontend Developer",
+      "company": "Freelance",
+      "period": "Jan 2022 - Present",
+      "location": "Nigeria",
+      "description": "• Partnered with local and international clients to scope, build, and ship tailored software solutions translating diverse business requirements into functional products that met each client's specific commercial objectives\n• Delivered consistently within fully distributed, asynchronous team environments spanning multiple time zones, maintaining clear communication, accountability, and output quality without in-person oversight\n• Architected and delivered production platforms across regulated and high-growth sectors including Fintech, Web3, E-commerce, and HR demonstrating rapid domain adaptability and the ability to navigate sector-specific constraints\n• Collaborated within globally distributed engineering teams, actively integrating cross-cultural working practices and diverse technical perspectives to continuously improve personal approach to software design and delivery",
+      "order": 1,
+      "$id": "6a05345a0027e6f4e2f5"
+    },
+    {
+      "role": "Frontend Developer",
+      "company": "Techub Spaces",
+      "period": "Jan 2024 - June 2024",
+      "location": "Ikeja, Lagos",
+      "description": "• Engineered and deployed custom AI agents across customer service, community Q&A, and task automation use cases reducing manual workload and enabling scalable, intelligent interactions without human intervention\n• Translated high-fidelity UI/UX prototypes into pixel-perfect, production-ready interfaces with strict design fidelity bridging the gap between design and engineering to eliminate costly revision cycles\n• Architected and delivered full-stack solutions encompassing frontend development, backend services, and third-party API integration  owning the complete technical surface area from user interface to data layer\n• Maintained a consistent record of on-time project delivery across a multi-client portfolio without compromising code quality or technical standards demonstrating reliable execution in deadline-driven environments\n• Designed and applied advanced prompt engineering techniques and fine-tuning strategies to align large language model outputs with precise behavioral specifications, tone requirements, and domain-specific response patterns\n",
+      "order": 2,
+      "$id": "6a053781003346af75b0"
+    }
+  ]
+}

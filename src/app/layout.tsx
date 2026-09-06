@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Fraunces } from "next/font/google";
 import "./globals.css";
-import { getSite } from "../lib/content";
+import { getPublicSite } from "../lib/public-content";
 
 const inter = Inter({
   variable: "--font-sans",
@@ -16,7 +16,7 @@ const fraunces = Fraunces({
 });
 
 export async function generateMetadata(): Promise<Metadata> {
-  const site = await getSite();
+  const site = await getPublicSite();
   return { title: site.metaTitle, description: site.metaDescription };
 }
 
