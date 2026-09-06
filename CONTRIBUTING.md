@@ -31,8 +31,10 @@ npm run build
 
 The browser suite starts its own server on port 3100. It uses mocked Appwrite
 responses and tests drafts, publishing, project modals, mobile navigation,
-outage fallbacks, and anonymous API rejection. Browser tests must run separately
-from production builds because both use `.next`.
+outage fallbacks, and anonymous API rejection. The development server uses
+`.next-dev`, browser tests use `.next-test`, and production builds and `next start`
+use the standard `.next` directory for hosting compatibility. Each has its own generated route types so tests and builds
+can run without replacing the development server's Webpack chunks.
 
 Unit tests cover link validation, project ordering and publishing validation,
 and snapshot preservation when a refresh fails. Snapshot fixtures live in
