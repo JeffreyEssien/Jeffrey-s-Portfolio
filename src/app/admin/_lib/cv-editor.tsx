@@ -8,6 +8,7 @@ import {
   DEFAULT_CV, getAbout, getContact, getCv, getHero, getProjects, getWorkEntries, seedCvFromSite, setContact, setCv,
   uploadFile, deleteFile,
 } from '../../../lib/content'
+import { tailorCv } from '../../../lib/cv/tailor'
 import { CvDocument, TEMPLATE_OPTIONS } from './cv-pdf'
 import { Field, FieldGroup, PageHeader, SaveBar, inputCls, useSaveState } from './forms'
 
@@ -67,8 +68,11 @@ export function CvEditor() {
   const [cv, setCvState] = useState<Cv>(DEFAULT_CV)
   const [state, save] = useSaveState()
   const [publishState, setPublishState] = useState<'idle' | 'publishing' | 'published' | 'error'>('idle')
+  const [uploadState, setUploadState] = useState<'idle' | 'uploading' | 'uploaded' | 'error'>('idle')
   const [contact, setContactState] = useState<Contact | null>(null)
   const [seedBusy, setSeedBusy] = useState(false)
+  const [jobDesc, setJobDesc] = useState('')
+  const [matchedTerms, setMatchedTerms] = useState<string[] | null>(null)
 
   useEffect(() => {
     getCv().then(setCvState)
@@ -103,6 +107,12 @@ export function CvEditor() {
     } finally { setSeedBusy(false) }
   }
 
+  const tailor = () => {
+    const { cv: next, matchedTerms } = tailorCv(cv, jobDesc)
+    setCvState(next)
+    setMatchedTerms(matchedTerms)
+  }
+
   const downloadPdf = async () => {
     const blob = await pdf(<CvDocument cv={cleanCv(cv)} />).toBlob()
     const url = URL.createObjectURL(blob)
@@ -111,6 +121,25 @@ export function CvEditor() {
     a.download = `${(cv.personal.fullName || 'cv').replace(/\s+/g, '_')}.pdf`
     a.click()
     URL.revokeObjectURL(url)
+  }
+
+  const uploadCvPdf = async (file: File) => {
+    if (!contact) return
+    if (file.type !== 'application/pdf') { setUploadState('error'); return }
+    setUploadState('uploading')
+    try {
+      const newFileId = await uploadFile(file)
+      const prev = contact.cvFileId
+      const nextContact = { ...contact, cvFileId: newFileId }
+      await setContact(nextContact)
+      setContactState(nextContact)
+      if (prev && prev !== newFileId) await deleteFile(prev)
+      setUploadState('uploaded')
+      setTimeout(() => setUploadState('idle'), 2500)
+    } catch (e) {
+      console.error(e)
+      setUploadState('error')
+    }
   }
 
   const publish = async () => {
@@ -142,10 +171,23 @@ export function CvEditor() {
       <div className="min-w-0">
         <PageHeader
           title="CV / Resume"
-          description="Edit every field. Pulls initial data from the site. Publish to update the public Download CV link."
+          description="Upload your own PDF to set the public Download CV link instantly — or build one from the fields below and Publish."
         />
 
         <div className="flex flex-wrap gap-2 mb-8">
+          <label className={`px-3 py-2 text-sm rounded-lg text-white cursor-pointer ${
+            uploadState === 'error' ? 'bg-red-600' :
+            uploadState === 'uploaded' ? 'bg-emerald-600' :
+            'bg-neutral-900 hover:bg-neutral-700'
+          } ${uploadState === 'uploading' ? 'opacity-50 pointer-events-none' : ''}`}>
+            {uploadState === 'uploading' ? 'Uploading…'
+              : uploadState === 'uploaded' ? 'Uploaded'
+              : uploadState === 'error' ? 'Error — PDF only, retry'
+              : 'Upload PDF'}
+            <input type="file" accept="application/pdf" className="hidden"
+              disabled={!contact || uploadState === 'uploading'}
+              onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ''; if (f) uploadCvPdf(f) }} />
+          </label>
           <button onClick={seed} disabled={seedBusy}
             className="px-3 py-2 text-sm border border-neutral-300 rounded-lg hover:border-neutral-900 disabled:opacity-50">
             {seedBusy ? 'Pulling…' : 'Pull from site'}
@@ -168,6 +210,31 @@ export function CvEditor() {
         </div>
 
         <div className="space-y-10">
+          <FieldGroup title="Tailor to a job" description="Paste a job description. Reorders your experience, projects and skills so the best-matching items surface first — keyword match only, nothing is reworded or removed. Review, then Save or Publish.">
+            <Field label="Job description">
+              <textarea className={inputCls + ' h-40'} value={jobDesc} placeholder="Paste the full job description here…"
+                onChange={(e) => setJobDesc(e.target.value)} />
+            </Field>
+            <div className="flex items-center gap-3">
+              <button onClick={tailor} disabled={!jobDesc.trim()}
+                className="px-3 py-2 text-sm rounded-lg text-white bg-neutral-900 hover:bg-neutral-700 disabled:opacity-50">
+                Tailor to this job
+              </button>
+              {matchedTerms && (
+                <span className="text-xs text-neutral-500">
+                  {matchedTerms.length ? `Reordered — ${matchedTerms.length} matched keyword${matchedTerms.length === 1 ? '' : 's'}` : 'No keyword matches found'}
+                </span>
+              )}
+            </div>
+            {matchedTerms && matchedTerms.length > 0 && (
+              <div className="flex flex-wrap gap-1.5">
+                {matchedTerms.slice(0, 24).map((t) => (
+                  <span key={t} className="text-[11px] px-2 py-0.5 rounded bg-emerald-100 text-emerald-700">{t}</span>
+                ))}
+              </div>
+            )}
+          </FieldGroup>
+
           <FieldGroup title="Template & layout" description="ATS templates are single-column, safe-font, parseable. Creative is for human readers only.">
             <Field label="Template">
               <div className="space-y-2">
