@@ -20,10 +20,11 @@ jobs:
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version-file: .nvmrc
-      - name: Read projects from Appwrite
+      - name: Write heartbeat to Appwrite (keep-alive)
         env:
           APPWRITE_ENDPOINT: ${{ vars.APPWRITE_ENDPOINT }}
           APPWRITE_PROJECT_ID: ${{ vars.APPWRITE_PROJECT_ID }}
+          APPWRITE_API_KEY: ${{ secrets.APPWRITE_API_KEY }}
           APPWRITE_DATABASE_ID: ${{ vars.APPWRITE_DATABASE_ID }}
-          APPWRITE_PROJECTS_COLLECTION_ID: ${{ vars.APPWRITE_PROJECTS_COLLECTION_ID }}
+          APPWRITE_HEARTBEAT_COLLECTION_ID: ${{ vars.APPWRITE_HEARTBEAT_COLLECTION_ID }}
         run: node scripts/check-appwrite.mjs
