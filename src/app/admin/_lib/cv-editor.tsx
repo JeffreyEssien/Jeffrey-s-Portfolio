@@ -73,6 +73,8 @@ export function CvEditor() {
   const [seedBusy, setSeedBusy] = useState(false)
   const [jobDesc, setJobDesc] = useState('')
   const [matchedTerms, setMatchedTerms] = useState<string[] | null>(null)
+  const [aiState, setAiState] = useState<'idle' | 'running' | 'done' | 'error'>('idle')
+  const [aiNote, setAiNote] = useState<string | null>(null)
 
   useEffect(() => {
     getCv().then(setCvState)
@@ -111,6 +113,27 @@ export function CvEditor() {
     const { cv: next, matchedTerms } = tailorCv(cv, jobDesc)
     setCvState(next)
     setMatchedTerms(matchedTerms)
+  }
+
+  const rewriteWithAi = async () => {
+    setAiState('running')
+    setAiNote(null)
+    try {
+      const res = await fetch('/api/cv/tailor-ai', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cv, jobDescription: jobDesc }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`)
+      setCvState(data.cv)
+      setAiState('done')
+      setAiNote(`Rewritten by ${data.provider === 'gemini' ? 'Google Gemini' : 'Claude'}`)
+      setTimeout(() => setAiState('idle'), 2500)
+    } catch (e) {
+      setAiState('error')
+      setAiNote((e as Error).message)
+    }
   }
 
   const downloadPdf = async () => {
@@ -210,20 +233,27 @@ export function CvEditor() {
         </div>
 
         <div className="space-y-10">
-          <FieldGroup title="Tailor to a job" description="Paste a job description. Reorders your experience, projects and skills so the best-matching items surface first — keyword match only, nothing is reworded or removed. Review, then Save or Publish.">
+          <FieldGroup title="Tailor to a job" description="Paste a job description, then reorder by keyword match (free, instant) and/or rewrite the wording with AI. Both only use your real content — nothing is invented. Review, then Save or Publish.">
             <Field label="Job description">
               <textarea className={inputCls + ' h-40'} value={jobDesc} placeholder="Paste the full job description here…"
                 onChange={(e) => setJobDesc(e.target.value)} />
             </Field>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-3">
               <button onClick={tailor} disabled={!jobDesc.trim()}
                 className="px-3 py-2 text-sm rounded-lg text-white bg-neutral-900 hover:bg-neutral-700 disabled:opacity-50">
-                Tailor to this job
+                Reorder by keyword match
+              </button>
+              <button onClick={rewriteWithAi} disabled={!jobDesc.trim() || aiState === 'running'}
+                className={`px-3 py-2 text-sm rounded-lg border ${aiState === 'error' ? 'border-red-400 text-red-600' : 'border-neutral-300 text-neutral-900 hover:border-neutral-900'} disabled:opacity-50`}>
+                {aiState === 'running' ? 'Rewriting…' : 'Rewrite wording with AI'}
               </button>
               {matchedTerms && (
                 <span className="text-xs text-neutral-500">
                   {matchedTerms.length ? `Reordered — ${matchedTerms.length} matched keyword${matchedTerms.length === 1 ? '' : 's'}` : 'No keyword matches found'}
                 </span>
+              )}
+              {aiNote && (
+                <span className={`text-xs ${aiState === 'error' ? 'text-red-600' : 'text-emerald-700'}`}>{aiNote}</span>
               )}
             </div>
             {matchedTerms && matchedTerms.length > 0 && (
