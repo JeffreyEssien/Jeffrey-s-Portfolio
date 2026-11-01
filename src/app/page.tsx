@@ -10,6 +10,7 @@ import { Cursor, Grain, Preloader, ScrollProgress } from '../../components/effec
 import dynamic from 'next/dynamic'
 import Ops from '../../components/ops'
 import Console from '../../components/console'
+import ViewChooser from '../../components/view-chooser'
 import { publishedHero, publishedSite } from '../lib/public-content'
 
 const Scene = dynamic(() => import('../../components/scene'), { ssr: false })
@@ -17,6 +18,7 @@ const Scene = dynamic(() => import('../../components/scene'), { ssr: false })
 export default function Home() {
   return (
     <div className="site">
+      <ViewChooser name={publishedSite.brand} />
       <Preloader label={publishedSite.brand} />
       <Scene name={`${publishedHero.name}.`} />
       <ScrollProgress />
