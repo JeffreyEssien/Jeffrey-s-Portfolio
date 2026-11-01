@@ -135,7 +135,7 @@ function ProjectRow({ project, onChanged, onDraft, onDiscard }: {
     try {
       if (image) newImage = await uploadFile(image)
       const { $id, ...data } = value
-      const cleaned = { ...data, title: data.title.trim(), description: data.description.trim(), link: externalUrl(data.link), sourceUrl: externalUrl(data.sourceUrl), technologies: (data.technologies || []).map((t) => t.trim()).filter(Boolean), imageFileId: newImage || data.imageFileId }
+      const cleaned = { ...data, title: data.title.trim(), description: data.description.trim(), link: externalUrl(data.link), sourceUrl: externalUrl(data.sourceUrl), technologies: (data.technologies || []).map((t) => t.trim()).filter(Boolean), features: (data.features || []).map((f) => f.trim()).filter(Boolean), steps: (data.steps || []).map((st) => ({ title: st.title.trim(), body: st.body.trim() })).filter((st) => st.title || st.body), imageFileId: newImage || data.imageFileId }
       if ($id) await updateProject($id, cleaned)
       else await createProject(cleaned)
       persisted = true
@@ -193,7 +193,23 @@ function ProjectRow({ project, onChanged, onDraft, onDiscard }: {
           <summary className="cursor-pointer text-sm font-medium">Case study details</summary>
           <div className="space-y-4 mt-4">
             <Field label="Your role"><input className={inputCls} value={value.role || ''} onChange={(e) => update({ role: e.target.value })} /></Field>
-            <Field label="The challenge" hint="What problem did you solve, and for whom?"><textarea className={inputCls + ' h-32'} value={value.problem || ''} onChange={(e) => update({ problem: e.target.value })} /></Field>
+            <Field label="The challenge" hint="Shown as “The problem”. What was broken, and for whom?"><textarea className={inputCls + ' h-32'} value={value.problem || ''} onChange={(e) => update({ problem: e.target.value })} /></Field>
+            <Field label="What I built" hint="One feature per line."><textarea className={inputCls + ' h-40'} value={(value.features || []).join('\n')} onChange={(e) => update({ features: e.target.value.split('\n') })} /></Field>
+            <div className="space-y-3">
+              <p className="text-sm font-medium">How it works <span className="font-normal text-neutral-500">— the flow, step by step</span></p>
+              {(value.steps || []).map((step, i) => (
+                <div key={i} className="grid gap-2 rounded-lg border border-neutral-200 p-3 sm:grid-cols-[2rem_10rem_1fr_auto] sm:items-start">
+                  <span className="pt-2 text-xs text-neutral-500">{i + 1}</span>
+                  <input aria-label={`Step ${i + 1} title`} placeholder="SALE" className={inputCls} value={step.title} onChange={(e) => update({ steps: (value.steps || []).map((s, j) => j === i ? { ...s, title: e.target.value } : s) })} />
+                  <textarea aria-label={`Step ${i + 1} description`} placeholder="Captured at the POS with prices from inventory." className={inputCls + ' h-20'} value={step.body} onChange={(e) => update({ steps: (value.steps || []).map((s, j) => j === i ? { ...s, body: e.target.value } : s) })} />
+                  <div className="flex gap-1 sm:flex-col">
+                    <button type="button" aria-label={`Move step ${i + 1} up`} disabled={i === 0} onClick={() => { const next = [...(value.steps || [])]; [next[i - 1], next[i]] = [next[i], next[i - 1]]; update({ steps: next }) }} className="rounded px-2 text-sm hover:bg-neutral-100 disabled:opacity-30">↑</button>
+                    <button type="button" aria-label={`Remove step ${i + 1}`} onClick={() => update({ steps: (value.steps || []).filter((_, j) => j !== i) })} className="rounded px-2 text-sm text-red-600 hover:bg-red-50">×</button>
+                  </div>
+                </div>
+              ))}
+              <button type="button" onClick={() => update({ steps: [...(value.steps || []), { title: '', body: '' }] })} className="rounded-lg border border-dashed border-neutral-300 px-4 py-2 text-sm hover:bg-neutral-50">+ Add step</button>
+            </div>
             <Field label="Your approach" hint="Explain your contribution and engineering decisions."><textarea className={inputCls + ' h-32'} value={value.solution || ''} onChange={(e) => update({ solution: e.target.value })} /></Field>
             <Field label="Results and lessons" hint="Describe concrete outcomes and what you learned."><textarea className={inputCls + ' h-32'} value={value.results || ''} onChange={(e) => update({ results: e.target.value })} /></Field>
           </div>

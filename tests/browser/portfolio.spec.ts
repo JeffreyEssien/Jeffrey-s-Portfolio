@@ -25,6 +25,10 @@ async function mockAdmin(page: Page) {
   return writes
 }
 
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => sessionStorage.setItem('view-chosen', '1'))
+})
+
 test('published content and local assets survive an Appwrite outage', async ({ page, request }) => {
   await page.route('https://appwrite.invalid/**', (route) => route.abort())
   await page.goto('/')
@@ -105,7 +109,7 @@ for (const mobile of [false, true]) {
     await page.keyboard.press('Escape')
     await expect(dialog).not.toBeVisible()
     await expect(trigger).toBeFocused()
-    expect(await page.evaluate(() => document.body.style.overflow)).not.toBe('hidden')
+    await expect.poll(() => page.evaluate(() => document.body.style.overflow)).not.toBe('hidden')
     await trigger.click()
     await dialog.getByRole('button', { name: 'Close project details' }).click()
     await expect(trigger).toBeFocused()
