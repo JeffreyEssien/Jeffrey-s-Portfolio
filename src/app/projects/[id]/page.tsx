@@ -25,9 +25,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function ProjectPage({ params }: Props) {
   const project = await findProject((await params).id)
   if (!project) notFound()
-  return <main>
+  return <main className="site min-h-screen">
     <nav aria-label="Project navigation" className="max-w-5xl mx-auto px-6 pt-8">
-      <Link href="/#projects" className="text-sm text-neutral-600 hover:text-neutral-900">← Back to all projects</Link>
+      <Link href="/#projects" className="text-sm text-muted hover:text-fg">← Back to all projects</Link>
     </nav>
     <ProjectDetails project={project} />
   </main>
