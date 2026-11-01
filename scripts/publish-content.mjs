@@ -15,7 +15,7 @@ const fields = {
   hero: ['availabilityLabel', 'greeting', 'name', 'subheadline', 'taglines', 'ctaPrimary', 'ctaSecondary'],
   about: ['eyebrow', 'headlinePrefix', 'headlineAccent', 'headlineSuffix', 'extraHeading', 'extraParagraph', 'educationLabel', 'educationDegree', 'educationSchool', 'educationPeriod', 'certificationsLabel', 'certifications', 'skillsLabel', 'skills', 'stackLabel', 'technologies'],
   contact: ['eyebrow', 'headlinePrefix', 'headlineAccent', 'headlineSuffix', 'body', 'ctaEmailLabel', 'ctaCvLabel', 'emailLinkLabel', 'email', 'ctaSubject', 'cvFileId'],
-  projects: ['title', 'description', 'link', 'imageFileId', 'order', 'sourceUrl', 'technologies', 'role', 'problem', 'solution', 'results', 'featured'],
+  projects: ['title', 'description', 'link', 'imageFileId', 'order', 'sourceUrl', 'technologies', 'role', 'problem', 'solution', 'results', 'features', 'steps', 'featured'],
   work: ['role', 'company', 'period', 'location', 'description', 'order'],
 }
 
