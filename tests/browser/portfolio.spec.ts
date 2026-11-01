@@ -25,6 +25,10 @@ async function mockAdmin(page: Page) {
   return writes
 }
 
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => sessionStorage.setItem('view-chosen', '1'))
+})
+
 test('published content and local assets survive an Appwrite outage', async ({ page, request }) => {
   await page.route('https://appwrite.invalid/**', (route) => route.abort())
   await page.goto('/')
