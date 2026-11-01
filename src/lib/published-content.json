@@ -1,63 +1,10 @@
 {
-  "publishedAt": "2026-09-05T06:41:55.117Z",
+  "publishedAt": "2026-10-31T11:23:22.010Z",
   "assets": {
-    "6a85db5900231977ce71": "/published-assets/499aca54997274ea22603657.gif",
-    "6a05d3be002ee1ea7850": "/published-assets/9c697d2818e94bc4e7fadbc6.jpg",
-    "6a0adf1d000ee7134fec": "/published-assets/499aca54997274ea22603657.gif",
+    "6ae5cf9b2ac26c9a16e2": "/published-assets/de71feffa8fad74a5692923f.jpg",
+    "6ae5cf9c7cd067170f4f": "/published-assets/2484e1fa28cd851abdbc1736.jpg",
+    "6ae5cf9d5e1e0112b481": "/published-assets/746d24b472839dc0fdcb64ce.jpg",
     "6a16d4ee003889ddeca0": "/published-assets/845a31cc28fc399174341140.pdf"
-  },
-  "hero": {
-    "availabilityLabel": "Available for new work",
-    "greeting": "Hello, I'm",
-    "name": "Jeffrey",
-    "subheadline": "A solution oriented software engineer building & scaling thoughtful projects.",
-    "taglines": [
-      "Seasoned Front-End Developer",
-      "DevOps Engineer",
-      "SEO specialist",
-      "Mobile App Builder",
-      "UI Implementation Expert",
-      "UX Specialist",
-      "Solution Oriented Engineer",
-      "Developer at scale"
-    ],
-    "ctaPrimary": "View Projects",
-    "ctaSecondary": "Contact Me"
-  },
-  "site": {
-    "brand": "Jeffrey Essien",
-    "navHome": "Home",
-    "navAbout": "About",
-    "navWork": "Experience",
-    "navProjects": "Work",
-    "navContact": "Contact",
-    "metaTitle": "Jeffrey Essien — Software Engineer",
-    "metaDescription": "DevOps Engineer, Front-end developer, mobile builder, UX-obsessed engineer.",
-    "footerCopyright": "© {year} Jeffrey Essien",
-    "footerTagline": "Designed & built with care",
-    "workEyebrow": "Experience",
-    "workHeadlinePrefix": "Places I've ",
-    "workHeadlineAccent": "worked",
-    "workHeadlineSuffix": ".",
-    "workEmpty": "No experience listed yet.",
-    "projectsEyebrow": "Selected Work",
-    "projectsHeadlinePrefix": "A few things I've ",
-    "projectsHeadlineAccent": "shipped",
-    "projectsHeadlineSuffix": ".",
-    "projectsEmpty": "No projects yet."
-  },
-  "contact": {
-    "eyebrow": "Contact",
-    "headlinePrefix": "Let's build something ",
-    "headlineAccent": "together",
-    "headlineSuffix": ".",
-    "body": "Always open to new projects, collaborations, or a quick conversation. The fastest way to reach me is by email.",
-    "ctaEmailLabel": "Send an email",
-    "ctaCvLabel": "Download CV",
-    "emailLinkLabel": "",
-    "email": "jeffreye306@gmail.com",
-    "ctaSubject": "Let's work together",
-    "cvFileId": "6a16d4ee003889ddeca0"
   },
   "about": {
     "eyebrow": "About",
@@ -133,29 +80,180 @@
       "Netlify"
     ]
   },
+  "contact": {
+    "eyebrow": "Contact",
+    "headlinePrefix": "Let's build something ",
+    "headlineAccent": "together",
+    "headlineSuffix": ".",
+    "body": "Always open to new projects, collaborations, or a quick conversation. The fastest way to reach me is by email.",
+    "ctaEmailLabel": "Send an email",
+    "ctaCvLabel": "Download CV",
+    "emailLinkLabel": "",
+    "email": "jeffreye306@gmail.com",
+    "ctaSubject": "Let's work together",
+    "cvFileId": "6a16d4ee003889ddeca0"
+  },
+  "hero": {
+    "availabilityLabel": "Available for new work",
+    "greeting": "Hello, I'm",
+    "name": "Jeffrey",
+    "subheadline": "A solution oriented software engineer building & scaling thoughtful projects.",
+    "taglines": [
+      "Seasoned Front-End Developer",
+      "DevOps Engineer",
+      "SEO specialist",
+      "Mobile App Builder",
+      "UI Implementation Expert",
+      "UX Specialist",
+      "Solution Oriented Engineer",
+      "Developer at scale"
+    ],
+    "ctaPrimary": "View Projects",
+    "ctaSecondary": "Contact Me"
+  },
+  "site": {
+    "brand": "Jeffrey Essien",
+    "navHome": "Home",
+    "navAbout": "About",
+    "navWork": "Experience",
+    "navProjects": "Work",
+    "navContact": "Contact",
+    "metaTitle": "Jeffrey Essien — Software Engineer",
+    "metaDescription": "DevOps Engineer, Front-end developer, mobile builder, UX-obsessed engineer.",
+    "footerCopyright": "© {year} Jeffrey Essien",
+    "footerTagline": "Designed & built with care",
+    "workEyebrow": "Experience",
+    "workHeadlinePrefix": "Places I've ",
+    "workHeadlineAccent": "worked",
+    "workHeadlineSuffix": ".",
+    "workEmpty": "No experience listed yet.",
+    "projectsEyebrow": "Selected Work",
+    "projectsHeadlinePrefix": "A few things I've ",
+    "projectsHeadlineAccent": "shipped",
+    "projectsHeadlineSuffix": ".",
+    "projectsEmpty": "No projects yet."
+  },
   "projects": [
     {
       "title": "Xélle.ng",
       "description": "I built XELLE end-to-end for a Nigerian high-end lifestyle brand everything from the database schema to the admin dashboard. The brief was simple: make it reliable enough that payment failures and overselling are never the client's problem. That shaped every technical decision on the project.",
       "link": "https://www.xelle.ng",
-      "imageFileId": "6a85db5900231977ce71",
+      "imageFileId": "6ae5cf9b2ac26c9a16e2",
       "order": 0,
+      "problem": "A high-end lifestyle brand selling through DMs and bank transfers can oversell stock, lose track of who has paid, and leave customers guessing where their order is.",
+      "features": [
+        "A full storefront: shop, product pages, search and checkout, priced in naira.",
+        "Atomic stock deduction in Postgres (per product and per variant), so two buyers can never take the last item.",
+        "An order queue that caps concurrent order writes, so a sales rush can't overload the database.",
+        "Stockpile: pay now, ship later. Items build up across orders for 14 days and ship together for one delivery fee.",
+        "Delivery pricing by zone: four Lagos zones plus interstate, doorstep or hub pickup, all editable from the admin.",
+        "Bank-transfer and WhatsApp payment with an admin confirmation step, plus order tracking and status emails.",
+        "Verified-purchase reviews, with review links emailed after delivery and admin moderation.",
+        "A 14-section admin: orders, inventory with low-stock alerts, coupons, customers, analytics and a rich-text CMS."
+      ],
+      "steps": [
+        {
+          "title": "Browse",
+          "body": "Customer shops the catalogue; prices and stock come live from Postgres."
+        },
+        {
+          "title": "Order",
+          "body": "Checkout goes through the order queue, which deducts stock atomically."
+        },
+        {
+          "title": "Pay",
+          "body": "Customer pays by bank transfer or WhatsApp; the admin confirms it."
+        },
+        {
+          "title": "Ship",
+          "body": "Delivery fee is set by zone; the order ships now or waits in a stockpile."
+        },
+        {
+          "title": "Follow up",
+          "body": "Status emails go out at each step, then a verified review link after delivery."
+        }
+      ],
       "$id": "69f314f900193946bad1"
     },
     {
       "title": "Zuta ya",
       "description": "ZúTa Ya started as a meat delivery brief and grew into something much larger. By the time it shipped, it was a unified platform handling a storefront, butchery services, a grill house menu, event bookings, subscriptions, and a full operations backend all in one codebase.",
       "link": "https://www.zutayang.com",
-      "imageFileId": "6a05d3be002ee1ea7850",
+      "imageFileId": "6ae5cf9c7cd067170f4f",
       "order": 1,
+      "problem": "A Lagos meat business was running four businesses at once (a shop, a grill house, butchery and event services, and subscriptions), and every one of them had to share the same stock, money and delivery slots without anything going out of sync.",
+      "features": [
+        "One codebase for the shop, packaged meat boxes, the Kitchen grill-house menu, outdoor butchery, Owambe event planning and bookings.",
+        "Atomic order creation in one Postgres transaction: it locks rows, deducts stock and rolls everything back if anything is short.",
+        "A Paystack payment ledger that records every attempt. Verify, webhook and cron race safely, and only the one that wins runs fulfilment.",
+        "Automatic payment recovery: a reconciliation cron, stock that restores exactly once, and one-time resume links for abandoned checkouts.",
+        "Overpayments and underpayments refunded automatically, with an append-only event log for every payment.",
+        "Recurring meat-box subscriptions charged on saved Paystack authorisations.",
+        "Cost snapshotted on every order line, so margin and COGS stay accurate when supplier prices change.",
+        "A 25-route admin covering orders, payments, disputes, delivery capacity, newsletters, an audit log, cron logs and analytics."
+      ],
+      "steps": [
+        {
+          "title": "Cart",
+          "body": "Cuts and packages go into the cart; packages expand into the real stock they use."
+        },
+        {
+          "title": "Order",
+          "body": "create_order_atomic locks rows, deducts stock and saves the order in one transaction."
+        },
+        {
+          "title": "Pay",
+          "body": "Paystack popup; verify, webhook and cron race, and one atomic update decides the winner."
+        },
+        {
+          "title": "Fulfil",
+          "body": "The order is confirmed, a receipt is emailed and the admin is notified within 30 seconds."
+        },
+        {
+          "title": "Recover",
+          "body": "Abandoned payments: stock restored once, customer emailed a resume link."
+        }
+      ],
       "$id": "69f316400002936d7e87"
     },
     {
       "title": "Chatmate",
       "description": "Student mental health services are stretched thin. This platform gives students a private, always available space to talk and knows exactly when the conversation needs a human instead.",
       "link": "https://student-therapy-chatbot-fe.vercel.app/",
-      "imageFileId": "6a0adf1d000ee7134fec",
+      "imageFileId": "6ae5cf9d5e1e0112b481",
       "order": 2,
+      "problem": "Students often need someone to talk to at 2am, long before a counsellor is free, and a chatbot that misses a crisis is worse than having none at all.",
+      "features": [
+        "Chatmate, a warm AI companion on Gemini that reflects feelings back before it offers any perspective.",
+        "Replies stream in token by token, with automatic fallback to another model when one is rate-limited.",
+        "Crisis handling: talk of self-harm or danger triggers a calm response and real Nigerian helplines (MANI, 24/7).",
+        "One-tap escalation that hands the conversation to a human counsellor.",
+        "A counsellor dashboard with pending and resolved cases, resolution notes and average response time.",
+        "Conversation export to PDF, so a student can take the conversation to a professional.",
+        "No accounts needed to start talking."
+      ],
+      "steps": [
+        {
+          "title": "Talk",
+          "body": "Student opens the chat, with no forms in the way."
+        },
+        {
+          "title": "Listen",
+          "body": "Gemini answers using a carefully written listening-first system prompt, streamed live."
+        },
+        {
+          "title": "Detect",
+          "body": "Signs of a crisis trigger safe wording and helplines."
+        },
+        {
+          "title": "Escalate",
+          "body": "Student hands the conversation to a human in one tap."
+        },
+        {
+          "title": "Resolve",
+          "body": "A counsellor picks up the case from the dashboard and records the outcome."
+        }
+      ],
       "$id": "6a0acad30012f28f5297"
     }
   ],

@@ -1,7 +1,9 @@
 'use client'
 
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import useSWR from 'swr'
+import { Magnetic, Scramble, WordReveal } from './effects'
 import { publicAssetUrl } from '../src/lib/public-content'
 import { publishedContact, publishedSite, getPublicContact, getPublicSite } from '../src/lib/public-content'
 
@@ -33,66 +35,94 @@ const Contact = () => {
       window.open(cvHref, '_blank', 'noopener,noreferrer')
     }
   }
+  const [copied, setCopied] = useState(false)
+  const copyEmail = async () => {
+    try {
+      await navigator.clipboard.writeText(c.email)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      window.location.href = mailto
+    }
+  }
   const year = new Date().getFullYear()
   const copyright = (site.footerCopyright || '').replace('{year}', String(year))
 
   return (
-    <section id="contact" className="py-32 px-6 md:px-8">
-      <div className="max-w-6xl mx-auto">
+    <section id="contact" className="relative pt-32 md:pt-40 overflow-hidden">
+      <div aria-hidden className="pointer-events-none absolute left-1/2 top-1/3 h-[520px] w-[820px] max-w-full -translate-x-1/2 rounded-full bg-accent/10 blur-[140px]" />
+      <div className="relative max-w-6xl mx-auto px-6 md:px-8">
         <div className="grid md:grid-cols-12 gap-8">
           <div className="md:col-span-3">
-            <p className="text-xs uppercase tracking-[0.15em] text-neutral-500">{c.eyebrow}</p>
+            <Scramble text={c.eyebrow} className="text-xs uppercase tracking-[0.2em] text-accent" />
           </div>
           <div className="md:col-span-9">
+            <h2 className="text-5xl md:text-8xl font-medium tracking-[-0.04em] leading-[0.98] text-fg mb-12">
+              <WordReveal parts={[{ text: c.headlinePrefix }, { text: c.headlineAccent, accent: true }, { text: c.headlineSuffix }]} />
+            </h2>
+
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
-              className="max-w-3xl"
             >
-              <h2 className="text-4xl md:text-6xl font-medium tracking-tight leading-[1.05] text-neutral-900 mb-12">
-                {c.headlinePrefix}
-                <span className="font-serif italic font-normal">{c.headlineAccent}</span>
-                {c.headlineSuffix}
-              </h2>
-
               {c.body && (
-                <p className="text-lg text-neutral-600 leading-relaxed max-w-xl mb-12">{c.body}</p>
+                <p className="text-lg text-muted leading-relaxed max-w-xl mb-12">{c.body}</p>
               )}
 
-              <div className="flex gap-3 flex-wrap mb-16">
+              <div className="flex gap-3 flex-wrap mb-12">
                 {c.ctaEmailLabel && (
-                  <a href={mailto} className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-neutral-900 text-white text-sm font-medium hover:bg-neutral-700 transition-colors duration-200">
-                    {c.ctaEmailLabel}
-                    <span aria-hidden>→</span>
-                  </a>
+                  <Magnetic>
+                    <a href={mailto} className="group inline-flex items-center gap-3 px-8 py-4 rounded-full bg-accent text-accent-fg text-sm font-semibold hover:shadow-[0_0_48px_-4px_var(--accent)] transition-shadow duration-300">
+                      {c.ctaEmailLabel}
+                      <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-1">→</span>
+                    </a>
+                  </Magnetic>
                 )}
                 {c.ctaCvLabel && (
-                  <a
-                    href={cvHref}
-                    onClick={handleCvDownload}
-                    rel="noopener noreferrer"
-                    download={cvFilename}
-                    className="inline-flex items-center px-6 py-3 rounded-full border border-neutral-300 text-sm font-medium text-neutral-900 hover:bg-neutral-100 transition-colors duration-200"
-                  >
-                    {c.ctaCvLabel}
-                  </a>
+                  <Magnetic>
+                    <a
+                      href={cvHref}
+                      onClick={handleCvDownload}
+                      rel="noopener noreferrer"
+                      download={cvFilename}
+                      className="inline-flex items-center gap-2 px-8 py-4 rounded-full border border-line text-sm font-medium text-fg hover:border-fg/40 hover:bg-white/5 transition-colors duration-200"
+                    >
+                      {c.ctaCvLabel} <span aria-hidden>↓</span>
+                    </a>
+                  </Magnetic>
                 )}
               </div>
 
-              <a href={mailto} className="text-neutral-500 hover:text-neutral-900 transition-colors duration-200 font-serif italic text-lg">
-                {c.emailLinkLabel || c.email}
-              </a>
+              <div className="flex flex-wrap items-center gap-4">
+                <a href={mailto} className="text-muted hover:text-fg transition-colors duration-200 font-serif italic text-xl md:text-2xl break-all">
+                  {c.emailLinkLabel || c.email}
+                </a>
+                <button type="button" onClick={copyEmail} className="rounded-full border border-line px-4 py-2 text-xs text-muted hover:border-accent hover:text-accent transition-colors duration-200" aria-live="polite">
+                  {copied ? 'Copied ✓' : 'Copy email'}
+                </button>
+              </div>
             </motion.div>
           </div>
         </div>
 
-        <footer className="mt-32 pt-8 border-t border-neutral-200 flex justify-between text-xs text-neutral-500">
+        <footer className="mt-32 pt-8 border-t border-line flex flex-wrap gap-4 justify-between text-xs text-faint">
           <span>{copyright}</span>
           <span>{site.footerTagline}</span>
+          <a href="#hero" className="hover:text-accent transition-colors">Back to top ↑</a>
         </footer>
       </div>
+      <motion.p
+        aria-hidden
+        initial={{ y: '40%', opacity: 0 }}
+        whileInView={{ y: 0, opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+        className="text-outline mt-8 pb-4 text-center text-[14.5vw] font-medium tracking-[-0.05em] leading-none whitespace-nowrap select-none"
+      >
+        {site.brand}
+      </motion.p>
     </section>
   )
 }

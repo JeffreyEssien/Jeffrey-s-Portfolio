@@ -40,16 +40,16 @@ export default function ProjectDialog({ project, onClose }: { project: Project; 
         const box = event.currentTarget.getBoundingClientRect()
         if (event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom) event.currentTarget.close()
       }}
-      className="fixed inset-0 m-auto max-h-[90dvh] w-[calc(100%_-_2rem)] max-w-4xl overflow-y-auto overscroll-contain rounded-2xl border border-neutral-200 bg-[#fafaf9] p-0 text-neutral-900 shadow-2xl backdrop:bg-neutral-900/60 backdrop:backdrop-blur-sm"
+      className="fixed inset-0 m-auto max-h-[90dvh] w-[calc(100%_-_2rem)] max-w-4xl overflow-y-auto overscroll-contain rounded-2xl border border-line bg-bg p-0 text-fg shadow-2xl backdrop:bg-black/70 backdrop:backdrop-blur-sm"
     >
-      <div className="sticky top-0 z-10 flex items-center justify-between gap-4 border-b border-neutral-200 bg-[#fafaf9]/95 px-6 py-4 backdrop-blur-sm">
-        <span className="text-xs uppercase tracking-widest text-neutral-500">About this project</span>
-        <button autoFocus onClick={() => dialog.current?.close()} aria-label="Close project details" className="inline-flex min-h-10 items-center gap-2 rounded-full border border-neutral-300 px-4 text-sm hover:bg-neutral-100">
+      <div className="sticky top-0 z-10 flex items-center justify-between gap-4 border-b border-line bg-bg/90 px-6 py-4 backdrop-blur-sm">
+        <span className="text-xs uppercase tracking-widest text-faint">About this project</span>
+        <button autoFocus onClick={() => dialog.current?.close()} aria-label="Close project details" className="inline-flex min-h-10 items-center gap-2 rounded-full border border-line px-4 text-sm hover:bg-fg/5">
           Close <span aria-hidden>×</span>
         </button>
       </div>
       <ProjectDetails project={project} titleId={titleId} embedded />
-      {project.$id && <div className="border-t border-neutral-200 px-6 py-6">
+      {project.$id && <div className="border-t border-line px-6 py-6">
         <Link href={`/projects/${encodeURIComponent(project.$id)}`} className="text-sm font-medium underline underline-offset-4">Open full project page →</Link>
       </div>}
     </dialog>

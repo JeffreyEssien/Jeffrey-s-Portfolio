@@ -78,8 +78,12 @@ export type Project = {
   problem?: string
   solution?: string
   results?: string
+  features?: string[]
+  steps?: ProjectStep[]
   featured?: boolean
 }
+
+export type ProjectStep = { title: string; body: string }
 
 export type Contact = {
   eyebrow: string
