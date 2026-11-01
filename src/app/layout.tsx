@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Fraunces } from "next/font/google";
 import "./globals.css";
 import { getPublicSite } from "../lib/public-content";
+import { siteUrl } from "../lib/site-url";
 
 const inter = Inter({
   variable: "--font-sans",
@@ -17,7 +18,13 @@ const fraunces = Fraunces({
 
 export async function generateMetadata(): Promise<Metadata> {
   const site = await getPublicSite();
-  return { title: site.metaTitle, description: site.metaDescription };
+  return {
+    metadataBase: siteUrl(),
+    title: site.metaTitle,
+    description: site.metaDescription,
+    openGraph: { type: "website", siteName: site.brand, title: site.metaTitle, description: site.metaDescription, url: "/" },
+    twitter: { card: "summary_large_image", title: site.metaTitle, description: site.metaDescription },
+  };
 }
 
 export default function RootLayout({
