@@ -58,6 +58,11 @@ function TiltImage({ project, onOpen }: { project: Project; onOpen: () => void }
   )
 }
 
+// The pitch's first sentence, so cards never cut off mid-thought.
+const lead = (text: string) => text.match(/^.+?[.!?](?=\s|$)/)?.[0] ?? text
+
+const host = (url: string) => { try { return new URL(url).hostname.replace(/^www\./, '') } catch { return '' } }
+
 // Cards pin one after another and the ones underneath sink back as the stack grows.
 function StackCard({ index, total, progress, children }: { index: number; total: number; progress: MotionValue<number>; children: React.ReactNode }) {
   const scale = useTransform(progress, [index / total, 1], [1, 1 - (total - index - 1) * 0.05])
@@ -121,9 +126,19 @@ const Projects = () => {
 
           {sorted.map((p, i) => (
             <StackCard key={p.$id ?? i} index={i} total={sorted.length} progress={scrollYProgress}>
-            <div className="grid md:grid-cols-12 gap-8 md:gap-12 items-center">
+            <div className="grid md:grid-cols-12 gap-8 md:gap-12 items-start">
               <div className={`md:col-span-7 ${i % 2 ? 'md:order-2' : ''}`}>
                 <TiltImage project={p} onOpen={() => setSelectedProject(p)} />
+                {!!p.features?.length && (
+                  <ul className="mt-6 space-y-2.5" aria-label="What I built">
+                    {p.features.filter((f) => f.trim()).slice(0, 3).map((f, k) => (
+                      <li key={k} className="flex gap-3 text-sm text-muted leading-relaxed">
+                        <span aria-hidden className="mt-[0.55em] h-1.5 w-1.5 shrink-0 rounded-full bg-accent" />
+                        <span className="line-clamp-2">{f}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
               <motion.div
                 initial={{ opacity: 0, y: 32 }}
@@ -136,10 +151,26 @@ const Projects = () => {
                   <span className="text-accent tabular-nums">{String(i + 1).padStart(2, '0')}</span>
                   <span className="h-px w-8 bg-line" aria-hidden />
                   <span className="tabular-nums">{String(sorted.length).padStart(2, '0')}</span>
+                  {externalUrl(p.link) && (
+                    <span className="ml-auto inline-flex items-center gap-2 normal-case tracking-normal text-muted">
+                      <span className="relative flex h-1.5 w-1.5"><span className="absolute inset-0 animate-ping rounded-full bg-accent opacity-75" /><span className="relative h-1.5 w-1.5 rounded-full bg-accent" /></span>
+                      {host(externalUrl(p.link))}
+                    </span>
+                  )}
                   {p.featured && <span className="ml-2 rounded-full border border-accent/40 px-2 py-0.5 text-accent normal-case tracking-normal">Featured project</span>}
                 </p>
                 <h3 className="text-4xl md:text-5xl font-medium tracking-tight text-fg mb-5">{p.title || 'Untitled'}</h3>
-                <p className="text-muted leading-relaxed line-clamp-4">{p.description}</p>
+                <p className="text-fg/80 text-lg leading-relaxed">{lead(p.description)}</p>
+                {!!p.steps?.length && (
+                  <ol aria-label="User journey" className="mt-6 flex flex-wrap items-center gap-x-2 gap-y-2 text-xs">
+                    {p.steps.filter((s) => s.title.trim()).map((s, k) => (
+                      <li key={k} className="flex items-center gap-2">
+                        {k > 0 && <span aria-hidden className="text-accent/60">→</span>}
+                        <span className="rounded-full border border-line bg-bg/40 px-3 py-1 text-muted">{s.title}</span>
+                      </li>
+                    ))}
+                  </ol>
+                )}
                 {!!p.technologies?.length && (
                   <ul className="flex flex-wrap gap-2 mt-6">
                     {p.technologies.map((tech, t) => <li key={t} className="rounded-full border border-line px-3 py-1 text-xs text-muted">{tech}</li>)}
@@ -148,7 +179,7 @@ const Projects = () => {
                 <div className="mt-8 flex flex-wrap items-center gap-4">
                   <Magnetic>
                     <button type="button" onClick={() => setSelectedProject(p)} aria-label={`Learn more about ${p.title}`} aria-haspopup="dialog" className="inline-flex items-center gap-2 rounded-full bg-fg px-6 py-3 text-sm font-medium text-bg hover:bg-accent transition-colors duration-200">
-                      Learn more <span aria-hidden>+</span>
+                      Read the case study <span aria-hidden>+</span>
                     </button>
                   </Magnetic>
                   {externalUrl(p.link) && (
