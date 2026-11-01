@@ -44,3 +44,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# personal notes and stray files (keep out of the public repo)
+/private/
+*.log
+/*.pdf
+/*.txt
