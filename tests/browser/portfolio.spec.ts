@@ -105,7 +105,7 @@ for (const mobile of [false, true]) {
     await page.keyboard.press('Escape')
     await expect(dialog).not.toBeVisible()
     await expect(trigger).toBeFocused()
-    expect(await page.evaluate(() => document.body.style.overflow)).not.toBe('hidden')
+    await expect.poll(() => page.evaluate(() => document.body.style.overflow)).not.toBe('hidden')
     await trigger.click()
     await dialog.getByRole('button', { name: 'Close project details' }).click()
     await expect(trigger).toBeFocused()
