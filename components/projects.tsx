@@ -126,7 +126,7 @@ const Projects = () => {
 
           {sorted.map((p, i) => (
             <StackCard key={p.$id ?? i} index={i} total={sorted.length} progress={scrollYProgress}>
-            <div className="grid md:grid-cols-12 gap-8 md:gap-12 items-center">
+            <div className="grid md:grid-cols-12 gap-8 md:gap-12 items-start">
               <div className={`md:col-span-7 ${i % 2 ? 'md:order-2' : ''}`}>
                 <TiltImage project={p} onOpen={() => setSelectedProject(p)} />
                 {!!p.features?.length && (
