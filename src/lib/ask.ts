@@ -31,9 +31,9 @@ const SYSTEM = [
 ].join('\n')
 
 async function gemini(prompt: string, key: string) {
-  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${key}`, {
+  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
     body: JSON.stringify({ systemInstruction: { parts: [{ text: SYSTEM }] }, contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 0.3, maxOutputTokens: 400 } }),
     signal: AbortSignal.timeout(20000),
   })
@@ -64,7 +64,9 @@ export async function askAboutJeffrey(question: string): Promise<{ answer: strin
     try {
       const answer = (await run()).trim()
       if (answer) return { answer, provider: name }
-    } catch {}
+    } catch (e) {
+      console.error(`ask: ${name} failed`, e)
+    }
   }
   throw new Error('The AI assistant is unavailable right now. Try again shortly.')
 }
