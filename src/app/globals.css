@@ -1,8 +1,42 @@
 @import "tailwindcss";
 
+/* Light tokens are the default (admin previews); the public site switches to dark. */
+:root {
+  --bg: #fafaf9;
+  --surface: #f5f5f4;
+  --fg: #171717;
+  --muted: #525252;
+  --faint: #737373;
+  --line: #e5e5e5;
+  --accent: #171717;
+  --accent-fg: #fafaf9;
+}
+
+body:has(.site) {
+  --bg: #0b0b0c;
+  --surface: #141416;
+  --fg: #f4f4f1;
+  --muted: #a8a8ad;
+  --faint: #8a8a90;
+  --line: rgb(255 255 255 / 0.1);
+  --accent: #c8f560;
+  --accent-fg: #0b0b0c;
+  background: var(--bg);
+  color: var(--fg);
+  color-scheme: dark;
+}
+
 @theme inline {
-  --color-background: #fafaf9;
-  --color-foreground: #0a0a0a;
+  --color-background: var(--bg);
+  --color-foreground: var(--fg);
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-fg: var(--accent-fg);
   --font-sans: var(--font-sans);
   --font-serif: var(--font-serif);
 }
@@ -13,11 +47,14 @@ html {
 
 section[id] { scroll-margin-top: 6rem; }
 
-:focus-visible { outline: 2px solid #171717; outline-offset: 4px; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+
+body:has(.site) ::selection { background: var(--accent); color: var(--accent-fg); }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  .marquee-track { animation: none !important; }
 }
 
 body {
@@ -30,3 +67,57 @@ body {
 .font-serif { font-family: var(--font-serif), Georgia, serif; }
 
 * { transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
+
+/* Film grain over the whole public site */
+.grain {
+  position: fixed;
+  inset: -50%;
+  z-index: 70;
+  pointer-events: none;
+  opacity: 0.06;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grain 8s steps(10) infinite;
+}
+
+@keyframes grain {
+  0%, 100% { transform: translate(0, 0); }
+  20% { transform: translate(-5%, 4%); }
+  40% { transform: translate(4%, -6%); }
+  60% { transform: translate(-3%, 7%); }
+  80% { transform: translate(6%, -3%); }
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee var(--marquee-duration, 40s) linear infinite;
+}
+.marquee-track[data-reverse] { animation-direction: reverse; }
+.marquee:hover .marquee-track { animation-play-state: paused; }
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* Cursor-following highlight; components set --mx / --my */
+.spotlight {
+  position: relative;
+  isolation: isolate;
+}
+.spotlight::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 300ms;
+  background: radial-gradient(400px circle at var(--mx, 50%) var(--my, 50%), color-mix(in srgb, var(--accent) 12%, transparent), transparent 60%);
+}
+.spotlight:hover::before { opacity: 1; }
+
+.text-outline {
+  color: transparent;
+  -webkit-text-stroke: 1px color-mix(in srgb, var(--fg) 35%, transparent);
+}

@@ -24,8 +24,8 @@
     "next": "^15.5.15",
     "react": "19.2.8",
     "react-dom": "19.2.8",
-    "react-simple-typewriter": "^5.0.1",
-    "swr": "^2.3.4"
+    "swr": "^2.3.4",
+    "three": "^0.170.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -34,6 +34,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/three": "^0.170.0",
     "eslint": "^9",
     "eslint-config-next": "^15.5.15",
     "node-appwrite": "^24.1.0",
