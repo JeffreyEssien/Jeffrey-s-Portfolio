@@ -124,7 +124,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
       </aside>
       <main className="flex-1 md:ml-64">
-        <div className={`${pathname === '/admin/cv' ? 'max-w-[1400px]' : 'max-w-3xl'} mx-auto px-4 sm:px-6 md:px-10 py-6 md:py-12 bg-white min-h-screen md:border-l border-neutral-200`}>{children}</div>
+        <div className={`${pathname === '/admin/cv' ? 'max-w-[1400px]' : pathname === '/admin/blog' ? 'max-w-6xl' : 'max-w-3xl'} mx-auto px-4 sm:px-6 md:px-10 py-6 md:py-12 bg-white min-h-screen md:border-l border-neutral-200`}>{children}</div>
       </main>
     </div>
   )
