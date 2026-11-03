@@ -10,6 +10,7 @@ const SECTIONS = [
   { href: '/admin/about', title: 'About', desc: 'Education, certifications, skills, stack — and section copy.' },
   { href: '/admin/work', title: 'Experience', desc: 'Add, edit, reorder, and delete work history entries.' },
   { href: '/admin/projects', title: 'Projects', desc: 'Add, edit, reorder, and delete projects with images.' },
+  { href: '/admin/blog', title: 'Blog', desc: 'Write, draft, and publish Markdown posts with cover images.' },
   { href: '/admin/contact', title: 'Contact', desc: 'Email, CV upload, contact section copy.' },
   { href: '/admin/cv', title: 'CV / Resume', desc: 'Build, preview, and publish the downloadable CV. ATS-safe and creative templates.' },
   { href: '/admin/jobs', title: 'Jobs', desc: 'Auto-refreshed twice daily — find Nigerian + worldwide-remote roles matched to your CV.' },

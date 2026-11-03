@@ -336,6 +336,65 @@ export async function deleteWorkEntry(id: string): Promise<void> {
   )
 }
 
+export type Post = {
+  $id?: string
+  title: string
+  slug: string
+  excerpt: string
+  body: string
+  coverFileId: string
+  date: string
+  tags?: string[]
+  draft?: boolean
+}
+
+export async function getPosts(fallback: Post[] = []): Promise<Post[]> {
+  if (!isAppwriteConfigured()) return fallback
+  try {
+    const documents = await listContent(APPWRITE_CONFIG.collections.posts)
+    const items = documents.map((doc) => {
+      const raw = (doc as { data?: string }).data || '{}'
+      const parsed = JSON.parse(raw)
+      return { $id: doc.$id, ...parsed } as Post
+    })
+    return items.sort((a, b) => b.date.localeCompare(a.date))
+  } catch {
+    return fallback
+  }
+}
+
+export async function createPost(p: Omit<Post, '$id'>): Promise<Post> {
+  const doc = await databases.createDocument(
+    APPWRITE_CONFIG.databaseId,
+    APPWRITE_CONFIG.collections.posts,
+    ID.unique(),
+    { data: JSON.stringify(p) },
+    [
+      Permission.read(Role.any()),
+      Permission.update(Role.users()),
+      Permission.delete(Role.users()),
+    ],
+  )
+  return { $id: doc.$id, ...p }
+}
+
+export async function updatePost(id: string, p: Omit<Post, '$id'>): Promise<void> {
+  await databases.updateDocument(
+    APPWRITE_CONFIG.databaseId,
+    APPWRITE_CONFIG.collections.posts,
+    id,
+    { data: JSON.stringify(p) },
+  )
+}
+
+export async function deletePost(id: string): Promise<void> {
+  await databases.deleteDocument(
+    APPWRITE_CONFIG.databaseId,
+    APPWRITE_CONFIG.collections.posts,
+    id,
+  )
+}
+
 export async function uploadFile(file: File): Promise<string> {
   const created = await storage.createFile(
     APPWRITE_CONFIG.bucketId,
