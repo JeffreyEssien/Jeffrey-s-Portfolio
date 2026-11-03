@@ -17,6 +17,7 @@ const fields = {
   contact: ['eyebrow', 'headlinePrefix', 'headlineAccent', 'headlineSuffix', 'body', 'ctaEmailLabel', 'ctaCvLabel', 'emailLinkLabel', 'email', 'ctaSubject', 'cvFileId'],
   projects: ['title', 'description', 'link', 'imageFileId', 'order', 'sourceUrl', 'technologies', 'role', 'problem', 'solution', 'results', 'features', 'steps', 'featured'],
   work: ['role', 'company', 'period', 'location', 'description', 'order'],
+  posts: ['title', 'slug', 'excerpt', 'body', 'coverFileId', 'date', 'tags', 'draft'],
 }
 
 async function request(path) {
@@ -60,8 +61,10 @@ async function main() {
     const response = await request(`/databases/${encodeURIComponent(database)}/collections/${encodeURIComponent(collection(name))}/documents/main`)
     snapshot[name] = decode(await response.json(), name)
   }))
-  ;[snapshot.projects, snapshot.work] = await Promise.all([list('projects'), list('work')])
-  const files = new Set([...snapshot.projects.map((p) => p.imageFileId), snapshot.contact.cvFileId].filter(Boolean))
+  ;[snapshot.projects, snapshot.work, snapshot.posts] = await Promise.all([list('projects'), list('work'), list('posts')])
+  // Unpublished posts never leave Appwrite.
+  snapshot.posts = snapshot.posts.filter((p) => !p.draft).sort((a, b) => String(b.date).localeCompare(String(a.date)))
+  const files = new Set([...snapshot.projects.map((p) => p.imageFileId), ...snapshot.posts.map((p) => p.coverFileId), snapshot.contact.cvFileId].filter(Boolean))
   const assets = []
   for (const id of files) {
     const response = await request(`/storage/buckets/${encodeURIComponent(bucket)}/files/${encodeURIComponent(id)}/view`)
@@ -81,7 +84,7 @@ async function main() {
   const destination = `${root}src/lib/published-content.json`
   await writeFile(`${destination}.tmp`, JSON.stringify(snapshot, null, 2) + '\n')
   await rename(`${destination}.tmp`, destination)
-  console.log(`Published snapshot: ${snapshot.projects.length} projects, ${snapshot.work.length} experience entries, ${assets.length} assets.`)
+  console.log(`Published snapshot: ${snapshot.projects.length} projects, ${snapshot.work.length} experience entries, ${snapshot.posts.length} posts, ${assets.length} assets.`)
   console.log('Include the snapshot and public/published-assets in your next deployment. Refresh after publishing content changes.')
 }
 

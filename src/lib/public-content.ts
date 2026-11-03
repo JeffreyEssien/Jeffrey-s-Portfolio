@@ -1,8 +1,8 @@
 import snapshot from './published-content.json'
 import {
   DEFAULT_ABOUT, DEFAULT_CONTACT, DEFAULT_HERO, DEFAULT_SITE,
-  getAbout, getContact, getHero, getProjects, getSite, getWorkEntries,
-  type About, type Contact, type Hero, type Project, type Site, type WorkEntry,
+  getAbout, getContact, getHero, getPosts, getProjects, getSite, getWorkEntries,
+  type About, type Contact, type Hero, type Post, type Project, type Site, type WorkEntry,
 } from './content'
 import { fileUrl } from './appwrite'
 
@@ -12,6 +12,7 @@ export const publishedAbout: About = { ...DEFAULT_ABOUT, ...snapshot.about }
 export const publishedContact: Contact = { ...DEFAULT_CONTACT, ...snapshot.contact }
 export const publishedProjects: Project[] = snapshot.projects
 export const publishedWork: WorkEntry[] = snapshot.work
+export const publishedPosts: Post[] = snapshot.posts
 export const publishedAt = snapshot.publishedAt
 
 async function withFallback<T>(request: Promise<T>, fallback: T): Promise<T> {
@@ -34,6 +35,7 @@ export const getPublicAbout = () => withFallback(getAbout(publishedAbout), publi
 export const getPublicContact = () => withFallback(getContact(publishedContact), publishedContact)
 export const getPublicProjects = () => withFallback(getProjects(publishedProjects), publishedProjects)
 export const getPublicWork = () => withFallback(getWorkEntries(publishedWork), publishedWork)
+export const getPublicPosts = async () => (await withFallback(getPosts(publishedPosts), publishedPosts)).filter((p) => !p.draft)
 
 export function publicAssetUrl(id: string): string {
   return (snapshot.assets as Record<string, string>)[id] || fileUrl(id)

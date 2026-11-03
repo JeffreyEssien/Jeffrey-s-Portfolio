@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo, useRef } from 'react'
 import useSWR from 'swr'
+import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { publishedSite, getPublicSite } from '../src/lib/public-content'
 
@@ -78,6 +79,9 @@ const Navbar = () => {
               </a>
             </li>
           ))}
+          <li className="relative">
+            <Link href="/blog" className="relative block py-3 md:py-2 md:px-4 transition-colors duration-200 text-faint hover:text-fg">Blog</Link>
+          </li>
         </ul>
       </div>
     </nav>
