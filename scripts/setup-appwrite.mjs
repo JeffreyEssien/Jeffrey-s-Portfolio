@@ -15,7 +15,7 @@ for (const [k, v] of Object.entries({ APPWRITE_PROJECT_ID, APPWRITE_API_KEY })) 
 
 const DB_ID = 'portfolio'
 const BUCKET_ID = 'assets'
-const COLLECTIONS = ['site', 'hero', 'about', 'projects', 'work', 'contact', 'cv', 'jobs', 'job_actions', 'job_profile']
+const COLLECTIONS = ['site', 'hero', 'about', 'projects', 'work', 'posts', 'contact', 'cv', 'jobs', 'job_actions', 'job_profile']
 
 const client = new Client().setEndpoint(APPWRITE_ENDPOINT).setProject(APPWRITE_PROJECT_ID).setKey(APPWRITE_API_KEY)
 const databases = new Databases(client)

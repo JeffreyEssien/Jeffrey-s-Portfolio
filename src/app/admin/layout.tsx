@@ -13,6 +13,7 @@ const NAV = [
   { href: '/admin/about', label: 'About' },
   { href: '/admin/work', label: 'Experience' },
   { href: '/admin/projects', label: 'Projects' },
+  { href: '/admin/blog', label: 'Blog' },
   { href: '/admin/contact', label: 'Contact' },
   { href: '/admin/cv', label: 'CV / Resume' },
   { href: '/admin/jobs', label: 'Jobs' },
