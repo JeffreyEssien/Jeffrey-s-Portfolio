@@ -14,10 +14,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const project = await findProject((await params).id)
   if (!project) return { title: 'Project not found', robots: { index: false } }
   const site = await getPublicSite()
+  const url = `/projects/${project.$id}`
   return {
     title: `${project.title} — ${site.brand}`,
     description: project.description,
-    openGraph: { title: project.title, description: project.description, type: 'article' },
+    alternates: { canonical: url },
+    openGraph: { title: project.title, description: project.description, type: 'article', url },
     twitter: { card: 'summary', title: project.title, description: project.description },
   }
 }

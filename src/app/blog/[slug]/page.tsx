@@ -14,10 +14,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const post = await findPost((await params).slug)
   if (!post) return { title: 'Post not found', robots: { index: false } }
   const site = await getPublicSite()
+  const url = `/blog/${post.slug}`
   return {
     title: `${post.title} — ${site.brand}`,
     description: post.excerpt,
-    openGraph: { title: post.title, description: post.excerpt, type: 'article', publishedTime: post.date },
+    alternates: { canonical: url },
+    openGraph: { title: post.title, description: post.excerpt, type: 'article', publishedTime: post.date, url },
     twitter: { card: 'summary', title: post.title, description: post.excerpt },
   }
 }
