@@ -9,7 +9,13 @@ export const dynamic = 'force-dynamic'
 
 export async function generateMetadata(): Promise<Metadata> {
   const site = await getPublicSite()
-  return { title: `${site.metaTitle} (simple)`, description: site.metaDescription }
+  // Same content as the home page: point search engines there and keep this copy out of results.
+  return {
+    title: `${site.metaTitle} (simple)`,
+    description: site.metaDescription,
+    alternates: { canonical: '/' },
+    robots: { index: false, follow: true },
+  }
 }
 
 const delay = (ms: number) => ({ '--d': `${ms}ms` }) as React.CSSProperties
