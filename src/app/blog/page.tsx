@@ -7,7 +7,13 @@ export const dynamic = 'force-dynamic'
 
 export async function generateMetadata(): Promise<Metadata> {
   const site = await getPublicSite()
-  return { title: `Blog — ${site.brand}`, description: `Writing by ${site.brand}.` }
+  const description = `Notes and articles by ${site.brand} on software engineering, front-end development, DevOps and building products.`
+  return {
+    title: `Blog — ${site.brand}`,
+    description,
+    alternates: { canonical: '/blog' },
+    openGraph: { title: `Blog — ${site.brand}`, description, url: '/blog' },
+  }
 }
 
 export default async function BlogPage() {
